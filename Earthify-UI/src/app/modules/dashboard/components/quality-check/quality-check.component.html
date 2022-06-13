@@ -1,0 +1,34 @@
+<div class="container h-100 p-0" style="background: rgba(255,255,255,0.75);overflow: auto;">
+  <div class="mt-8 pb-5 pl-3 pr-3 pt-20 skill-box" style="background: rgba(255,255,255,0.7);">
+    <div class="header fg-white" style="background: rgba(138, 162, 174,0.7);">
+      <div class="avatar"><span class="icon mif-2x mif-chart-line"></span></div>
+      <button (click)="processJob()" style="top:30px;right: 10px;" class="button light pos-absolute small" *ngIf="currentJob != ''">Process</button>
+      <div class="title">Quality checking</div>
+    </div>
+    <div class="row">
+      <div class="col-6 mr-0 p-0">
+        <div class="items-list p-0">
+
+          <div [ngClass]="{'bg-gray': currentJob == job.job_id}" (click)="getJobColumn(job.job_id)" class="item c-pointer" *ngFor="let job of jobs;let index = index;">
+            <span class="avatar mif-chart-line fg-amber"></span>
+            <span class="label">{{job.file_name}}</span>
+            <span class="second-label">{{job.job_id}}</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 bg-gray ml-0 pl-0" *ngIf="currentJob != ''">
+        <div class="d-flex">
+          <ul class="items-list">
+            <li>Col 1</li>
+            <li>Col 2</li>
+            <li>Col 3</li>
+          </ul>
+          <ul data-role="drag-items" id="job-col" class="items-list">
+
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

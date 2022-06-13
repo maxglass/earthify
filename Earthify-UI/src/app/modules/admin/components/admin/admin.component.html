@@ -1,0 +1,65 @@
+<div data-role="appbar" data-expand-point="md" class="d-flex bg-white">
+
+  <a href="#" class="brand no-hover">
+    <img src="assets/logo.jpg" class="img-fluid" style="height: 50px;">
+  </a>
+
+  <div class="app-bar-container ml-auto">
+    <div class="app-bar-container bg-light" style="z-index: 100000;position: fixed;top: 0; right: 0">
+      <a (click)="logout()" class="app-bar-item c-pointer">
+        <span class="ml-2 app-bar-name">Log Out</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="container h-100 p-0" style="background: rgba(255,255,255,0.75);overflow: auto;">
+  <div class="mt-8 pb-5 pl-3 pr-3 pt-20 skill-box" style="background: rgba(255,255,255,0.7);">
+    <div class="header fg-white" style="background: rgba(138, 162, 174,0.7);">
+      <div class="avatar"><span class="icon mif-2x mif-cart"></span></div>
+      <div class="title">Users</div>
+    </div>
+    <div class="row flex-align-center flex-justify-between">
+      <div style="width: 130px" class="ml-1">
+        <input type="text" data-role="materialinput"
+               placeholder="Search"
+               data-icon="<span class='mif-search'>"
+               data-label="Search"
+               data-informer=""
+               data-cls-line="bg-cyan"
+               data-cls-label="fg-cyan"
+               data-cls-informer="fg-lightCyan"
+               data-cls-icon="fg-darkCyan"
+               (keyup)="onSearch($event)"
+               id="search"
+        >
+      </div>
+      <div style="width: 200px" class="mr-1">
+        <select id="per-page" data-role="select">
+          <option value="5"  data-template="<span class='mif-list-numbered icon'></span> $1">5</option>
+          <option value="10" selected data-template="<span class='mif-list-numbered icon'></span> $1">10</option>
+          <option value="15" data-template="<span class='mif-list-numbered icon'></span> $1">15</option>
+          <option value="20" data-template="<span class='mif-list-numbered icon'></span> $1">20</option>
+          <option value="25" data-template="<span class='mif-list-numbered icon'></span> $1">25</option>
+        </select>
+      </div>
+
+      <!--<input placeholder="Search"  type="text" data-role="materialinput" data-search-button="true">-->
+    </div>
+    <table id="user-table" class="table"
+           data-role="table"
+           data-show-search="false"
+           data-show-rows-steps="false"
+           data-show-table-info="false"
+           data-show-pagination="false"
+    >
+
+    </table>
+    <ul class="pagination">
+      <li (click)="getMarketData(link.url)" [class]="{'active': link.active, 'no-link': link.url == null}"
+          class="page-item" *ngFor="let link of market.links">
+        <a class="page-link c-pointer" [innerHTML]="link.label"></a>
+      </li>
+    </ul>
+  </div>
+</div>

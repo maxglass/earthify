@@ -1,0 +1,171 @@
+<div class="w-75 z-inbox d-none pos-absolute" id="inbox"
+     data-role="panel"
+     data-width="280"
+     data-title-caption="Inbox"
+     data-title-icon="<span class='mif-envelop'></span>"
+     data-collapsible="true"
+     data-cls-panel="shadow-3"
+     data-cls-title="bg-darkTeal fg-white"
+     data-cls-title-icon="fg-white"
+     data-cls-collapse-toggle="bg-gray fg-white marker-dark"
+     data-on-collapse="$('#inbox').parent().addClass('d-none');$('#inbox').parent().find('.dropdown-toggle').click();"
+>
+    <div class="items-list" style="max-height: 480px;overflow: auto">
+        <div class="item h-auto" *ngFor="let inb of inbox" style="min-height: 90px;">
+            <span class="avatar"><span class="icon mif-envelop"></span></span>
+            <span class="label">{{inb.title}}</span>
+            <span class="second-label" [innerHTML]="inb.content"></span>
+            <span class="second-action" style="width: 60px;
+    font-size: 10px;
+    height: 50px;
+    background: white;">{{inb.created_at}}</span>
+        </div>
+        <div class="item" *ngIf="inbox.length == 0">
+            <span class="label">No messages</span>
+        </div>
+        <a routerLink="inbox" style="text-decoration: none;position: sticky;bottom: 5px;" class="button small light">View All</a>
+    </div>
+</div>
+<div class="w-75 z-inbox d-none pos-absolute" id="alerts"
+     data-role="panel"
+     data-width="280"
+     data-title-caption="Notifications"
+     data-title-icon="<span class='mif-bell'></span>"
+     data-collapsible="true"
+     data-cls-panel="shadow-3"
+     data-cls-title="bg-darkTeal fg-white"
+     data-cls-title-icon="fg-white"
+     data-cls-collapse-toggle="bg-gray fg-white marker-dark"
+     data-on-collapse="$('#alerts').parent().addClass('d-none');$('#alerts').parent().find('.dropdown-toggle').click();"
+>
+    <div class="items-list" style="max-height: 370px;overflow: auto">
+        <div [class]="{'fg-blue': noti.notification_type_id == 0, 'fg-amber': noti.notification_type_id == 1, 'fg-red': noti.notification_type_id == 2}" class="item h-auto" *ngFor="let noti of alerts" style="min-height: 90px;">
+            <span class="avatar"><span class="icon mif-envelop"
+            [class]="{'mif-info': noti.notification_type_id == 0, 'mif-warning': noti.notification_type_id == 1, 'mif-notification': noti.notification_type_id == 2}"></span></span>
+            <span class="label">{{noti.title}}</span>
+            <span class="second-label">{{noti.description}}</span>
+            <span class="second-action" style="width: 60px;
+    font-size: 10px;
+    height: 50px;
+    background: white;">{{noti.created_at}}</span>
+        </div>
+        <div class="item" *ngIf="alerts.length == 0">
+            <span class="label">No notifications</span>
+        </div>
+        <a routerLink="alerts" style="text-decoration: none;position: sticky;bottom: 5px;" class="button small light">View All</a>
+    </div>
+</div>
+<div data-role="appbar" data-expand-point="md" class="d-flex bg-white">
+
+    <a href="#" class="brand no-hover">
+        <img src="assets/logo.jpg" class="img-fluid" style="height: 50px;">
+    </a>
+
+    <ul id="main-menu" data-app-bar="false" data-role="materialtabs" class="">
+        <li routerLink="map"><a href="#map">Map</a></li>
+    </ul>
+    <div class="app-bar-container ml-auto">
+        <div class="app-bar-container bg-light" style="z-index: 100000;position: fixed;top: 0; right: 0">
+            <a (click)="login()" class="app-bar-item c-pointer">
+                <span class="ml-2 app-bar-name">Log Out</span>
+            </a>
+        </div>
+        <div *ngIf="profile.id != -1" class="app-bar-container bg-light" style="z-index: 100000;position: fixed;top: 0; right: 0">
+            <a href="#" class="app-bar-item">
+                <span class="ml-2 app-bar-name">{{profile.first_name}} {{profile.last_name}}</span>
+            </a>
+            <!--<div class="user-block shadow-1" data-role="collapse" data-collapsed="true">-->
+                <div style="position: absolute;top: 52px;right: 0;width: 320px;" class="social-box shadow-1" data-role="collapse" data-collapsed="true">
+                    <div class="header bg-darkTeal fg-white">
+                        <div id="dp" class="avatar" style="
+                        background-repeat: no-repeat;
+  background-position: center;
+  height: 90px;
+  background-image: url('assets/logo.jpg')"></div>
+                        <div class="title"></div>
+                        <div class="subtitle"></div>
+                    </div>
+                    <div class="d-flex flex-column flex-align-center flex-justify-center">
+
+                        <button (click)="logout()" data-role="button" class="image-button light w-100 mt-5">
+                            <span class="icon mif-exit"></span>
+                            <span class="caption">Logout</span>
+                        </button>
+                    </div>
+
+                </div>
+            <!--</div>-->
+        </div>
+    </div>
+</div>
+<div class="dialog fg-amber border-none" id="wallet-dialog" data-role="dialog" style="background: rgba(0,0,0,0.8);">
+    <div class="dialog-title">Buy Earthify Coin</div>
+    <div class="dialog-content">
+        <div class="skills p-3">
+            <label>Quantity</label>
+            <input data-role="input" type="number" id="lima-to-buy" value="1">
+            <label for="coins">Coins</label>
+            <select id="coins" data-role="select">
+
+            </select>
+            <span class="d-block">Coin converted value</span>
+            <span id="coin-value"></span>
+        </div>
+    </div>
+    <div class="dialog-actions">
+        <button class="button js-dialog-close alert">Close</button>
+        <button (click)="buyCoins()" class="image-button dark">
+            <img class="icon" src="assets/coin.png">
+            <span class="caption">Pay via <b>Coinpayments</b></span>
+        </button>
+    </div>
+</div>
+<div class="dialog fg-amber border-none" id="pending-dialog" data-role="dialog" style="background: rgba(0,0,0,0.8);min-width: 550px;">
+    <div class="dialog-title">Pending Transaction</div>
+    <div class="dialog-content">
+        <div class="items-list">
+            <div class="item">
+                <img class="avatar" [src]="pendingTransaction.icon">
+                <span class="label">{{pendingTransaction.name}}</span>
+                <span class="second-label">Coin</span>
+            </div>
+            <div class="item">
+                <img class="avatar" src="assets/coin.png">
+                <span class="label">{{pendingTransaction.pay_address}}</span>
+                <span class="second-label">Address to pay</span>
+            </div>
+            <div class="item">
+                <span class="avatar mif-dollars"></span>
+                <span class="label">{{pendingTransaction.coin_amount}}</span>
+                <span class="second-label">Amount to pay</span>
+            </div>
+            <div class="item">
+                <span class="avatar mif-dollar"></span>
+                <span class="label">{{pendingTransaction.amount}}</span>
+                <span class="second-label">Lima Coins</span>
+            </div>
+            <div class="item">
+                <span class="avatar mif-hour-glass" *ngIf="pendingTransaction.status == 'pending'"></span>
+                <span class="avatar mif-done_all" *ngIf="pendingTransaction.status == 'credited'"></span>
+                <span class="label text-cap">{{pendingTransaction.status}}</span>
+                <span class="second-label">Status</span>
+            </div>
+            <div class="item" style="height: 290px">
+                <img class="avatar" src="assets/coin.png">
+                <span class="label"><img [src]="pendingTransaction.qrcode"></span>
+                <span class="second-label">QR</span>
+            </div>
+
+        </div>
+    </div>
+    <div class="dialog-actions">
+        <button class="button js-dialog-close alert">Close</button>
+        <button *ngIf="profile.pending != null" class="button warning" (click)="checkPendingStatus()">Refresh Status</button>
+        <button *ngIf="profile.pending != null" class="button alert js-dialog-close" (click)="cancelPendingTransactions()">Cancel Transaction</button>
+        <a target="_blank" [href]="pendingTransaction.coin_status" class="image-button dark">
+            <img class="icon" src="assets/coin.png">
+            <span class="caption">View Live Details</span>
+        </a>
+    </div>
+</div>
+<router-outlet></router-outlet>

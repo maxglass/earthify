@@ -1,0 +1,76 @@
+<a routerLink="/login" href="#/login" class="image-button dark" style="
+position: fixed;
+    top: 10px;
+    left: 10px;
+    text-decoration: none;
+    z-index: 10000;">
+    <span class="icon mif-arrow-left"></span>
+    <span class="caption">Go Back</span>
+</a>
+<div class="h-vh-100 d-flex flex-justify-center flex-align-center">
+    <div class="login-box">
+        <form id="registration-form" class="border border-radius border-radius-7 fg-amber p-4 register-form" style="background: rgba(0,0,0,0.5)"
+              action="javascript:"
+              data-role="validator"
+              data-clear-invalid="3000"
+              (submit)="submitRegistration()"
+        >
+            <span class="icon mif-earth2 mif-7x place-right mt-8-minus mr-8-minus" style="background: black;
+    border-radius: 32px;"></span>
+            <h1 class="mb-0">Register</h1>
+            <div class="text-muted mb-4">Register a new membership</div>
+            <div class="form-group">
+                <input name="first_name" type="text" data-role="input" placeholder="First name" data-append="<span class='mif-user'>" data-validate="required minlength=2">
+                <span class="invalid_feedback">First name is required. Must be at least 2 characters</span>
+            </div>
+            <div class="form-group">
+                <input name="last_name" type="text" data-role="input" placeholder="Last name" data-append="<span class='mif-user'>" data-validate="">
+                <span class="invalid_feedback"></span>
+            </div>
+            <div class="form-group">
+                <input name="email" type="text" data-role="input" placeholder="Email" data-append="<span class='mif-envelop'>" data-validate="required email">
+                <span class="invalid_feedback">Please enter a valid email address</span>
+            </div>
+            <div class="form-group">
+                <input name="password" type="password" data-role="input" placeholder="Password" data-append="<span class='mif-key'>" data-validate="required minlength=8">
+                <span class="invalid_feedback">Password is required. Must be at least 8 characters</span>
+                <input class="mt-4" type="password" data-role="input" placeholder="Retype password" data-append="<span class='mif-checkmark'>" data-validate="required equals=password">
+                <span class="invalid_feedback">Please enter a password</span>
+            </div>
+
+            <div class="form-group">
+                <input name="description" type="text" data-role="input" placeholder="Description" data-append="<span class='mif-description'>" data-validate="">
+                <span class="invalid_feedback"></span>
+            </div>
+
+            <div class="form-group">
+                <input name="mobile" type="text" data-role="input" placeholder="Mobile" data-append="<span class='mif-mobile'>" data-validate="digits">
+                <span class="invalid_feedback"></span>
+            </div>
+            <div class="form-group d-flex flex-align-center flex-justify-between">
+                <button class="button warning" (click)="checkForInvalid()">Register</button>
+            </div>
+            <!--<div class="text-center m-4">- OR -</div>-->
+            <!--<div class="form-group">-->
+                <!--<button class="image-button w-100 mt-1 bg-facebook fg-white" type="button">-->
+                    <!--<span class="mif-facebook icon"></span>-->
+                    <!--<span class="caption">Sign Up using Facebook</span>-->
+                <!--</button>-->
+                <!--<button class="image-button w-100 mt-1 bg-github fg-white" type="button">-->
+                    <!--<span class="mif-github icon"></span>-->
+                    <!--<span class="caption">Sign Up using GitHub</span>-->
+                <!--</button>-->
+                <!--<button class="image-button w-100 mt-1 bg-gitlab fg-white" type="button">-->
+                    <!--<span class="mif-gitlab icon"></span>-->
+                    <!--<span class="caption">Sign Up using GitLab</span>-->
+                <!--</button>-->
+            <!--</div>-->
+            <div class="form-group border-top bd-default pt-2">
+                <a routerLink="/login" style="text-decoration: none" class="d-block fg-amber">I already have a membership</a>
+            </div>
+            <div class="form-group border-top bd-default pt-2">
+                <a  class="d-block fg-amber c-pointer" (click)="openVerifyDialog()">Verify Account</a>
+            </div>
+        </form>
+    </div>
+</div>

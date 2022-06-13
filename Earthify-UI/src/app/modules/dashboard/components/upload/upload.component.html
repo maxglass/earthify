@@ -1,0 +1,28 @@
+<div class="container h-100 p-0" style="background: rgba(255,255,255,0.75);overflow: auto;">
+  <div class="mt-8 pb-5 pl-3 pr-3 pt-20 skill-box" style="background: rgba(255,255,255,0.7);">
+    <div class="header fg-white" style="background: rgba(138, 162, 174,0.7);">
+      <div class="avatar"><span class="icon mif-2x mif-chart-line"></span></div>
+      <div class="title">Upload data</div>
+    </div>
+    <input (change)="getFile($event)" type="file" data-role="file" data-mode="drop" accept=".geojson,.kml,.shp,.gpkg">
+    <button (click)="processFile()" class="button small success" *ngIf="file != null">Submit ({{file.name}})</button>
+  </div>
+  <div class="mt-2 pb-5 pl-3 pr-3 pt-2 skill-box" style="background: rgba(255,255,255,0.7);">
+    <div class="header fg-white" style="background: rgba(138, 162, 174,0.7);">
+      <div class="avatar"><span class="icon mif-2x mif-chart-line"></span></div>
+      <div class="title">Jobs</div>
+    </div>
+    <div class="items-list">
+
+      <div class="item" *ngFor="let job of jobs;let index = index;">
+        <span class="avatar mif-chart-line fg-amber"></span>
+        <span class="label">{{job.file_name}}</span>
+        <span class="second-label">{{job.start_time}}</span>
+        <span class="second-action" style="font-size: 11px;
+    width: 70px;">
+          {{getStatus(job.status)}}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

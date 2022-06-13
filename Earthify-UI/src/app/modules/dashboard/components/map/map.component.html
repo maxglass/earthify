@@ -1,0 +1,93 @@
+<div id="map" class="w-100 h-100" style="z-index: 0;top: 50px;">
+    <div class="pos-fixed z-1" style="bottom: 30px;left: 10px;">
+        <button class="button cycle light" id="basemaps_toggle">
+            <span class="mif-map"></span>
+        </button>
+        <ul class="d-menu drop-up shadowed fg-black"
+            data-role="dropdown"
+            data-toggle-element="#basemaps_toggle"
+            style="width: 230px;background: rgba(255,255,255,0.7);margin-left: 0;border-radius: 7px;">
+            <li (click)="changeBaseMap(view.url)" class="c-pointer bg-transparent p-2"
+                [class]="{'bg-darkGrayBlue': view.url == currentView}"
+                *ngFor="let view of settings.mapViews">
+                <a style="font-size: 15px;color: black;" class="d-flex">
+                    <img class="circle shadowed" src="assets/{{view.icon}}.png" style="
+                        width: 35px;
+                        height: 35px;
+                        border-radius: 17px; margin: -17px -3px;">
+                    <span class="pos-absolute"
+                          style="left: 45px;white-space: nowrap;">{{view.view}}</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <ul data-role="bottomsheet" id="group-view" style="min-width: 650px">
+        <li class="p-0" style="height: 200px">
+            <div class="d-flex flex-align-center">
+                <div class="d-flex flex-column">
+                    <img src="{{bidDetails.banner_path}}" style="width: 200px;height: 130px;" onError="this.src='assets/logo.jpg'">
+                    <span class="invalid_feedback d-block" style="height: 20px;">Lat {{currentGroupCenter.lat}}</span>
+                    <span class="invalid_feedback d-block">Lng {{currentGroupCenter.lng}}</span>
+                </div>
+
+                <div class="items-list">
+                    <div *ngIf="bidDetails.for_sale" class="item">
+                        <div class="avatar">
+                            <span class="icon mif-info"></span>
+                        </div>
+                        <span class="label">{{bidDetails.sale_text}}</span>
+                        <span class="second-label">Deed name</span>
+                    </div>
+                    <div class="item">
+                        <div class="avatar">
+                            <span class="icon mif-pin"></span>
+                        </div>
+                        <span class="label">{{bidDetails.location_name}}
+                    </span>
+                        <span class="second-label">Located at</span>
+                    </div>
+                    <div class="item">
+                        <div class="avatar">
+                            <img src="{{bidDetails.picture}}" style="width: 40px;height: 40px;border-radius: 50%"  onError="this.src='assets/logo.jpg'">
+                            <img class="pos-absolute" style="bottom: 0;right: 0;width: 20px" src="assets/countries/{{bidDetails.code}}.png"  onError="this.src='assets/countries/no-flag.png'">
+
+                        </div>
+                        <span class="label">{{bidDetails.first_name}} {{bidDetails.last_name}}</span>
+                        <span class="second-label">Owner</span>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li><span class="icon mif-apps"></span>Tiles <span class="text-bold">{{allBidIds.length}}</span></li>
+        <li *ngIf="bidDetails.for_sale">
+            <span class="icon mif-dollars"></span>Sale For <span>L${{bidDetails.sale_price}}</span></li>
+        <li *ngIf="bidDetails.for_sale && !currentBidDetails.status && ownProperty == false" class="button d-flex dark flex-justify-between" (click)="doBid()">
+            <span class="icon mif-cart"></span>Bid</li>
+        <li *ngIf="bidDetails.for_sale && currentBidDetails.status && ownProperty == false" class="button d-flex alert flex-justify-between" (click)="cancelBid()">
+            <span class="icon mif-backspace1"></span>Cancel your Bid of $L{{currentBidDetails.data.price}}</li>
+        <li class="button d-flex dark flex-justify-between" (click)="viewProperty()">
+            <span class="icon mif-paragraph-center"></span>Details</li>
+        <li class="button d-flex alert flex-justify-between" (click)="clearBidSelection()" onclick="Metro.bottomsheet.close('#group-view', 'list')">
+            <span class="icon mif-cross-light"></span>Close</li>
+    </ul>
+    <div class="pos-absolute d-flex flex-column z-1" style="right: 10px;bottom: 70px">
+        <button class="button light cycle shadowed m-1" (click)="map.zoomIn()">
+            <span class="mif-plus"></span>
+        </button>
+        <button class="button cycle shadowed m-1"  [class]="{'info': isGridVisible, 'light': !isGridVisible}"
+                (click)="setGridVisibility()">
+            <span class="mif-apps"></span>
+        </button>
+        <button class="button cycle shadowed m-1"  [class]="{'info': is3D, 'light': !is3D}"
+                (click)="set3D()">
+            <span class="mif-location-city"></span>
+        </button>
+        <button class="button cycle shadowed m-1"  [class]="{'info': isTerrain, 'light': !isTerrain}"
+                (click)="setTerrain()">
+            <span class="mif-traffic-cone"></span>
+        </button>
+        <button class="button light cycle shadowed m-1" (click)="map.zoomOut()">
+            <span class="mif-minus"></span>
+        </button>
+    </div>
+</div>

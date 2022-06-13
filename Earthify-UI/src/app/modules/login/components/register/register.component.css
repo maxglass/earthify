@@ -1,0 +1,21 @@
+.login-box {
+    display: block;
+    position: relative;
+    width: 100%;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+@media screen and (min-width: 640px) {
+    .login-box {
+        width: 360px;
+    }
+    .page-error-box {
+        width: 480px;
+    }
+}
+.page-error-box {
+    width: 100%;
+    display: block;
+    position: relative;
+    text-align: center;
+}

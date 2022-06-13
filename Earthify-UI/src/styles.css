@@ -1,0 +1,51 @@
+/* You can add global styles to this file, and also import other style files */
+.icon {
+    margin-left: -1px;
+}
+
+.controls {
+    display: none !important;
+}
+
+.video-player {
+    position: fixed !important;
+    height: 100% !important;
+    width: 100% !important;
+    z-index: 0 !important;
+}
+
+.login-form {
+    width: 350px;
+    height: auto;
+    top: 50%;
+    margin-top: -160px;
+}
+
+.g-login-form {
+    width: 350px;
+    height: auto;
+    top: 40%;
+    margin-top: -160px;
+}
+
+.z-inbox {
+    z-index: 100001;
+}
+
+#sideInfo.sidenav-simple-expand-fs .counter{
+    top: 18px !important;
+    color: black;
+}
+
+#sideInfo .counter {
+    transition: 0.5s;
+    color: mediumvioletred;
+}
+
+.select.focused {
+    box-shadow: none !important;
+}
+
+button:focus,.button:focus {
+    box-shadow: none !important;
+}

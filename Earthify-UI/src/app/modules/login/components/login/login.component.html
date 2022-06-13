@@ -1,0 +1,40 @@
+<a routerLink="/dashboard/app/main" href="#/dashboard/app/main" class="image-button dark" style="
+position: fixed;
+    top: 10px;
+    left: 10px;
+    text-decoration: none;
+    z-index: 10000;">
+    <span class="icon mif-arrow-left"></span>
+    <span class="caption">Main Page</span>
+</a>
+<form class="login-form fg-amber p-6 mx-auto border bd-default win-shadow rounded" style="background: rgba(0,0,0,0.5)"
+      data-role="validator"
+      data-clear-invalid="3000">
+    <span class="mif-vpn-lock mif-4x place-right" style="margin-top: -10px;"></span>
+    <h2 class="text-light">Login to EARTHIFY</h2>
+    <hr class="thin mt-4 mb-4 bg-white">
+    <div class="form-group">
+        <input id="username" type="text" data-role="input" data-prepend="<span class='mif-envelop'>" placeholder="Enter your email..." data-validate="required email">
+        <span class="invalid_feedback fg-white">Please enter a valid email address</span>
+    </div>
+    <div class="form-group">
+        <input id="pass" type="password" data-role="input" data-prepend="<span class='mif-key'>" placeholder="Enter your password..." data-validate="required minlength=6">
+        <span class="invalid_feedback fg-white">Password must be at least of 6 characters</span>
+    </div>
+    <div class="form-group mt-10">
+        <button type="submit" class="image-button warning" (click)="login()">
+            <span class="mif-verified icon"></span>
+            <span class="caption">Login</span>
+        </button>
+        <a routerLink="/register" class="image-button warning place-right" style="text-decoration: none">
+            <span class="mif-user-plus icon"></span>
+            <span class="caption">Register</span>
+        </a>
+    </div>
+    <div class="form-group border-top bd-default pt-2">
+        <a style="text-decoration: none" routerLink="/forget" class="d-block fg-amber">Forget Password / Reset?</a>
+    </div>
+<!--    <div class="form-group border-top bd-default pt-2">-->
+<!--        <a (click)="openVerifyDialog()" class="d-block fg-amber c-pointer">Verify account</a>-->
+<!--    </div>-->
+</form>
