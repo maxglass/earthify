@@ -126,12 +126,13 @@ async def create_job(file: UploadFile = File(...), req: Request = None, db: Sess
     job.job_id = str(uuid.uuid4())
     letters = string.ascii_lowercase
     job.table_name = ''.join(random.choice(letters) for i in range(10))
-    job.path = os.path.abspath("uploads/"+job.job_id)+"/"
+    job.path = os.path.abspath(__file__).replace("app/api.py", "uploads/"+job.job_id+"/")
+    # job.path = os.path.abspath("uploads/"+job.job_id)+"/"
     job.file_name = file.filename
 
     try:
         if not os.path.exists(job.path):
-            os.mkdir(os.path.abspath("uploads/" + job.job_id))
+            os.mkdir(job.path)
         contents = await file.read()
         with open(job.path + job.file_name, 'wb') as f:
             f.write(contents)
