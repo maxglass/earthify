@@ -219,7 +219,7 @@ async def send_mail(email: str):
 
 @app.get('/getEarthVideo')
 async def video_endpoint():
-    return FileResponse(os.path.abspath("uploads/earth.mp4"))
+    return FileResponse(os.path.abspath(__file__).replace("app/api.py","uploads/earth.mp4"))
 
 
 @app.get('/users', response_model=Page[schemas.Users], tags=["user"])
