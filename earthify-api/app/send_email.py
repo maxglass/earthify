@@ -1,3 +1,5 @@
+import os
+
 from fastapi import BackgroundTasks
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from decouple import config
@@ -12,6 +14,7 @@ class Envs:
     MAIL_FROM_NAME = config('MAIL_FROM_NAME')
 
 
+templatePath = os.path.abspath(__file__).replace("app/send_email.py", "templates/email")
 conf = ConnectionConfig(
     MAIL_USERNAME=Envs.MAIL_USERNAME,
     MAIL_PASSWORD=Envs.MAIL_PASSWORD,
@@ -22,7 +25,7 @@ conf = ConnectionConfig(
     MAIL_TLS=True,
     MAIL_SSL=False,
     USE_CREDENTIALS=True,
-    TEMPLATE_FOLDER='templates/email'
+    TEMPLATE_FOLDER=templatePath
 )
 
 
