@@ -22,7 +22,7 @@ conf = ConnectionConfig(
     MAIL_TLS=True,
     MAIL_SSL=False,
     USE_CREDENTIALS=True,
-    TEMPLATE_FOLDER='./templates/email'
+    TEMPLATE_FOLDER='templates/email'
 )
 
 
