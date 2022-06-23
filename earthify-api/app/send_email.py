@@ -3,7 +3,7 @@ from fastapi import BackgroundTasks
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from dotenv import load_dotenv
 
-load_dotenv('.env')
+load_dotenv('./.env')
 
 
 class Envs:
