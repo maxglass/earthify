@@ -37,6 +37,21 @@ class Jobs(Base):
     table_name = Column(String)
 
 
+class JobDetails(Base):
+    __tablename__ = 'jobs_details'
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    job_id = Column(String)
+    description = Column(Text)
+    country = Column(String)
+    state = Column(String)
+    county = Column(String)
+    open_data_url = Column(String)
+    download_url = Column(String)
+    mapping_service_url = Column(String)
+    property_search_url = Column(String)
+    tax_collect_url = Column(String)
+
+
 class Data(Base):
     __tablename__ = 'data'
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)

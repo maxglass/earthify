@@ -1,8 +1,8 @@
-"""DB Migration
+"""db migration
 
-Revision ID: a2058df07662
+Revision ID: 0fbe984aa9bd
 Revises: 
-Create Date: 2022-06-11 01:24:19.426495
+Create Date: 2022-06-16 20:42:36.734566
 
 """
 import bcrypt
@@ -11,9 +11,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-from db.dbModel import UserRoles, User
-
-revision = 'a2058df07662'
+revision = '0fbe984aa9bd'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -40,22 +38,41 @@ def upgrade() -> None:
     sa.Column('end_time', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
     sa.Column('status', sa.Integer(), nullable=True),
     sa.Column('file_name', sa.String(), nullable=True),
+    sa.Column('path', sa.Text(), nullable=True),
+    sa.Column('table_name', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_jobs_id'), 'jobs', ['id'], unique=False)
+    op.create_table('jobs_details',
+    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
+    sa.Column('job_id', sa.String(), nullable=True),
+    sa.Column('description', sa.Text(), nullable=True),
+    sa.Column('country', sa.String(), nullable=True),
+    sa.Column('state', sa.String(), nullable=True),
+    sa.Column('county', sa.String(), nullable=True),
+    sa.Column('open_data_url', sa.String(), nullable=True),
+    sa.Column('download_url', sa.String(), nullable=True),
+    sa.Column('mapping_service_url', sa.String(), nullable=True),
+    sa.Column('property_search_url', sa.String(), nullable=True),
+    sa.Column('tax_collect_url', sa.String(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_jobs_details_id'), 'jobs_details', ['id'], unique=False)
     list_user_roles = op.create_table('user_roles',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('role_id', sa.Integer(), nullable=True),
-    sa.Column('title', sa.String(), autoincrement=True),
+    sa.Column('title', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_user_roles_id'), 'user_roles', ['id'], unique=False)
     op.bulk_insert(list_user_roles, [
         {'role_id': 0, 'title': 'admin'},
         {'role_id': 1, 'title': 'data'},
-        {'role_id': 2, 'title': 'viewer'},
-        {'role_id': 3, 'title': 'qc'}
+        {'role_id': 2, 'title': 'standardize'},
+        {'role_id': 3, 'title': 'normalize'},
+        {'role_id': 4, 'title': 'viewer'}
     ])
+
     list_users = op.create_table('users',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('email', sa.String(), nullable=True),
@@ -76,10 +93,37 @@ def upgrade() -> None:
             'first_name': 'System',
             'last_name': 'Admin',
             'role_id': 0
+        },
+        {
+            'email': 'data@earthify.com',
+            'password': admin_pass,
+            'first_name': 'Data',
+            'last_name': 'Uploader',
+            'role_id': 1
+        },
+        {
+            'email': 'sd@earthify.com',
+            'password': admin_pass,
+            'first_name': 'Data',
+            'last_name': 'Standardize',
+            'role_id': 2
+        },
+        {
+            'email': 'normal@earthify.com',
+            'password': admin_pass,
+            'first_name': 'Data',
+            'last_name': 'Normalize',
+            'role_id': 3
+        },
+        {
+            'email': 'view@earthify.com',
+            'password': admin_pass,
+            'first_name': 'Data',
+            'last_name': 'Viewer',
+            'role_id': 4
         }
     ])
     # op.drop_table('spatial_ref_sys')
-    # seed()
     # ### end Alembic commands ###
 
 
@@ -98,29 +142,11 @@ def downgrade() -> None:
     op.drop_table('users')
     op.drop_index(op.f('ix_user_roles_id'), table_name='user_roles')
     op.drop_table('user_roles')
+    op.drop_index(op.f('ix_jobs_details_id'), table_name='jobs_details')
+    op.drop_table('jobs_details')
     op.drop_index(op.f('ix_jobs_id'), table_name='jobs')
     op.drop_table('jobs')
     op.drop_index(op.f('ix_data_job_id'), table_name='data')
     op.drop_index(op.f('ix_data_id'), table_name='data')
     op.drop_table('data')
     # ### end Alembic commands ###
-
-
-def seed() -> None:
-    op.bulk_insert(UserRoles.__tablename__, [
-        {'role_id': 0, 'title': 'admin'},
-        {'role_id': 1, 'title': 'data'},
-        {'role_id': 2, 'title': 'viewer'},
-        {'role_id': 3, 'title': 'qc'}
-    ])
-    admin_pass = bcrypt.hashpw('admin123'.encode('utf-8'), bcrypt.gensalt())
-    admin_pass = admin_pass.decode('utf-8')
-    op.bulk_insert(User.__tablename__, [
-        {
-            'email': 'admin@earthify.com',
-            'password': admin_pass,
-            'first_name': 'System',
-            'last_name': 'Admin',
-            'role_id': 0
-        }
-    ])

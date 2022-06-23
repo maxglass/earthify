@@ -1,0 +1,6 @@
+0000000000000000000000000000000000000000 f9b20a296fffa5cb34d3343c41141633d647f3cb wahab <wahabch.ch@gmail.com> 1654987934 +0500	clone: from https://gitlab.com/wahabch/earthify-api.git
+f9b20a296fffa5cb34d3343c41141633d647f3cb 189000aaa669112ac9385681ffd1df47ff06d019 wahab <wahabch.ch@gmail.com> 1654988019 +0500	commit: project init
+189000aaa669112ac9385681ffd1df47ff06d019 ebda145d166d68e398697e5a8178c6b6a3d32e29 wahab <wahabch.ch@gmail.com> 1654988124 +0500	commit: envoirement
+ebda145d166d68e398697e5a8178c6b6a3d32e29 c783267a0361721b6a1256f9bd99c6ec6bdcd890 wahab <wahabch.ch@gmail.com> 1654989336 +0500	commit: push env
+c783267a0361721b6a1256f9bd99c6ec6bdcd890 81dbf979b960d094e1e8fd0f66622306af780812 wahab <wahabch.ch@gmail.com> 1654989431 +0500	commit: command
+81dbf979b960d094e1e8fd0f66622306af780812 230ed321a7212f70fab4da1ebe032e4ff0d34ec4 wahab <wahabch.ch@gmail.com> 1654991373 +0500	commit: update migration
