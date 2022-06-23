@@ -4,8 +4,133 @@
       <div class="avatar"><span class="icon mif-2x mif-chart-line"></span></div>
       <div class="title">Upload data</div>
     </div>
-    <input (change)="getFile($event)" type="file" data-role="file" data-mode="drop" accept=".geojson,.kml,.shp,.gpkg">
-    <button (click)="processFile()" class="button small success" *ngIf="file != null">Submit ({{file.name}})</button>
+    <div [ngClass]="{'d-none': file != null}">
+      <input (change)="getFile($event)" type="file" data-role="file" data-mode="drop" accept=".geojson,.kml,.shp,.gpkg">
+    </div>
+    <div class="form-group" [ngClass]="{'d-none': file == null}">
+      <form (submit)="checkForInvalid($event)" id="data-form" data-clear-invalid="3000"
+             data-role="validator" action="javascript:">
+      <div class="form-group d-flex flex-column">
+        <input type="text" name="description" data-role="input"
+             placeholder="Enter description"
+             data-prepend="<span class='mif-info'>"
+             data-label="Description"
+             data-cls-line="bg-cyan"
+             data-cls-label="fg-cyan"
+             data-cls-informer="fg-lightCyan"
+             data-cls-icon="fg-darkCyan"
+             data-validate="required minlength=6"
+      ><span class="invalid_feedback">
+                Description is required and must be at least of 6 characters
+            </span></div>
+        <div class="form-group d-flex flex-column">
+          <input type="text" name="country" data-role="input"
+              placeholder="Enter country name"
+              data-prepend="<span class='mif-info'>"
+              data-label="Country"
+              data-cls-line="bg-cyan"
+              data-cls-label="fg-cyan"
+              data-cls-informer="fg-lightCyan"
+              data-cls-icon="fg-darkCyan"
+              data-validate="required"
+    ><span class="invalid_feedback">
+                Country is required
+            </span></div>
+        <div class="form-group d-flex flex-column">
+          <input type="text" name="state" data-role="input"
+              placeholder="Enter state name"
+              data-prepend="<span class='mif-info'>"
+              data-label="State"
+              data-cls-line="bg-cyan"
+              data-cls-label="fg-cyan"
+              data-cls-informer="fg-lightCyan"
+              data-cls-icon="fg-darkCyan"
+            data-validate="required"
+    ><span class="invalid_feedback">
+                State is required
+            </span></div>
+        <div class="form-group d-flex flex-column">
+          <input type="text" name="county" data-role="input"
+              placeholder="Enter county name"
+              data-prepend="<span class='mif-info'>"
+              data-label="County"
+              data-cls-line="bg-cyan"
+              data-cls-label="fg-cyan"
+              data-cls-informer="fg-lightCyan"
+              data-cls-icon="fg-darkCyan"
+            data-validate="required"
+    ><span class="invalid_feedback">
+                County is required
+            </span></div>
+        <div class="form-group d-flex flex-column">
+          <input type="text" name="open_data_url" data-role="input"
+              placeholder="Enter open data url"
+              data-prepend="<span class='mif-info'>"
+              data-label="Open Data URL"
+              data-cls-line="bg-cyan"
+              data-cls-label="fg-cyan"
+              data-cls-informer="fg-lightCyan"
+              data-cls-icon="fg-darkCyan"
+            data-validate="required"
+    ><span class="invalid_feedback">
+                Invalid URL
+            </span></div>
+        <div class="form-group d-flex flex-column">
+          <input type="text" name="download_url" data-role="input"
+              placeholder="Enter download url"
+              data-prepend="<span class='mif-info'>"
+              data-label="Download URL"
+              data-cls-line="bg-cyan"
+              data-cls-label="fg-cyan"
+              data-cls-informer="fg-lightCyan"
+              data-cls-icon="fg-darkCyan"
+            data-validate="required"
+    ><span class="invalid_feedback">
+                Invalid URL
+            </span></div>
+        <div class="form-group d-flex flex-column">
+          <input type="text" name="mapping_service_url" data-role="input"
+              placeholder="Enter mapping service url"
+              data-prepend="<span class='mif-info'>"
+              data-label="Mapping Service URL"
+              data-cls-line="bg-cyan"
+              data-cls-label="fg-cyan"
+              data-cls-informer="fg-lightCyan"
+              data-cls-icon="fg-darkCyan"
+            data-validate="required"
+    ><span class="invalid_feedback">
+                Invalid URL
+            </span></div>
+        <div class="form-group d-flex flex-column">
+          <input type="text" name="property_search_url" data-role="input"
+              placeholder="Enter property search url"
+              data-prepend="<span class='mif-info'>"
+              data-label="Property Search URL"
+              data-cls-line="bg-cyan"
+              data-cls-label="fg-cyan"
+              data-cls-informer="fg-lightCyan"
+              data-cls-icon="fg-darkCyan"
+            data-validate="required"
+    ><span class="invalid_feedback">
+                Invalid URL
+            </span></div>
+        <div class="form-group d-flex flex-column mb-3">
+          <input type="text" name="tax_collect_url" data-role="input"
+              placeholder="tax collect url"
+              data-prepend="<span class='mif-info'>"
+              data-label="Tax Collect URL"
+              data-cls-line="bg-cyan"
+              data-cls-label="fg-cyan"
+              data-cls-informer="fg-lightCyan"
+              data-cls-icon="fg-darkCyan"
+            data-validate="required"
+    ><span class="invalid_feedback">
+                Invalid URL
+            </span></div>
+      <button type="submit" class="button small success">Submit ({{file != null ? file.name: ''}})</button>
+      <button (click)="file = null" class="button small alert">Cancel</button>
+      </form>
+  </div>
   </div>
   <div class="mt-2 pb-5 pl-3 pr-3 pt-2 skill-box" style="background: rgba(255,255,255,0.7);">
     <div class="header fg-white" style="background: rgba(138, 162, 174,0.7);">
@@ -17,7 +142,10 @@
       <div class="item" *ngFor="let job of jobs;let index = index;">
         <span class="avatar mif-chart-line fg-amber"></span>
         <span class="label">{{job.file_name}}</span>
-        <span class="second-label">{{job.start_time}}</span>
+        <span class="second-label d-flex flex-column pt-1">
+          <label>Time: {{job.start_time}}</label>
+          <label>ID: {{job.job_id}}</label>
+        </span>
         <span class="second-action" style="font-size: 11px;
     width: 70px;">
           {{getStatus(job.status)}}

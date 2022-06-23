@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {SharedService} from "../../../../shared.service";
-
+declare var $: any;
 @Component({
   selector: 'app-upload',
   templateUrl: './upload.component.html',
@@ -32,17 +32,52 @@ export class UploadComponent implements OnInit {
     console.log(this.file)
   }
 
-  processFile(): void {
+  checkForInvalid(evt: any): void {
+    const ctx = this;
+    setTimeout( () => {
+      console.log('checking')
+      if ($('.invalid').length > 0) {
+        SharedService.invalidForm("#data-form");
+      } else {
+        ctx.processFile(evt)
+      }
+    }, 200);
+  }
+
+  processFile(evt: any): any {
+    // evt.preventDefault();
+    evt.stopPropagation()
     const form = new FormData();
     form.append('file', this.file);
     SharedService.loading('create_job', false);
     this.data.apiService('create_job', form).subscribe((result: any) => {
+      this.file = null;
       SharedService.loading('create_job', true);
       SharedService.fire(result.message, !result.status);
-      this.getJobs()
+      if (result.status){
+        this.processJobDetails(result.job_id)
+      }
+    },(error: any) => {
+      this.file = null;
+      SharedService.loading('create_job', true);
+    });
+  }
+
+  processJobDetails(job_id: string): any {
+    const formData = $('#data-form').serializeArray()
+    const form: any = {job_id: job_id}
+    // form.append('job_id', job_id);
+    formData.forEach((formField: any) => {
+      form[formField.name] = formField.value;
+    });
+    SharedService.loading('create_job', false);
+    this.data.apiService('create_job_details', form).subscribe((result: any) => {
+      SharedService.loading('create_job', true);
+      SharedService.fire("Job created successfully", false);
+      this.getJobs();
     },(error: any) => {
       SharedService.loading('create_job', true);
-    })
+    });
   }
 
   getStatus(e: any): string {

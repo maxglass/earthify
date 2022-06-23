@@ -38,7 +38,7 @@ export class LoginComponent implements OnInit {
                             })
                         } else if (result.hasOwnProperty('access_token')) {
                             SharedService.setCookie('access_token', result.access_token, 0.1);
-                            this.data.postCheckLogin();
+                            window.location.reload(true)
                         }
                     },
                     (err) => {

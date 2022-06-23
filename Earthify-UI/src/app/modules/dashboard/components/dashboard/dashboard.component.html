@@ -55,22 +55,27 @@
         <a routerLink="alerts" style="text-decoration: none;position: sticky;bottom: 5px;" class="button small light">View All</a>
     </div>
 </div>
-<div data-role="appbar" data-expand-point="md" class="d-flex bg-white">
+<div data-role="appbar" data-expand-point="md" class="d-flex" style="background: #babfc1">
 
     <a href="#" class="brand no-hover">
         <img src="assets/logo.jpg" class="img-fluid" style="height: 50px;">
+      <h3 class="fg-light" style="font-weight: 200;">EARTHIFY</h3>
     </a>
 
-    <ul id="main-menu" data-app-bar="false" data-role="materialtabs" class="">
+    <ul id="main-menu" data-app-bar="false" data-role="materialtabs" class="bg-transparent fg-light">
         <li routerLink="map"><a href="#map">Map</a></li>
+        <li *ngIf="currentRoute=='upload' || currentRoute == 'management'" routerLink="upload"><a href="#upload">Upload</a></li>
+        <li *ngIf="currentRoute=='standard' || currentRoute == 'management'" routerLink="standard"><a href="#standard">Standardize</a></li>
+        <li *ngIf="currentRoute=='normalise' || currentRoute == 'management'" routerLink="normalise"><a href="#normalise">Normalize</a></li>
+        <li *ngIf="currentRoute=='management' || currentRoute == 'management'" routerLink="management"><a href="#management">User-Management</a></li>
     </ul>
     <div class="app-bar-container ml-auto">
-        <div class="app-bar-container bg-light" style="z-index: 100000;position: fixed;top: 0; right: 0">
+        <div class="app-bar-container bg-grayBlue fg-light" style="z-index: 100000;position: fixed;top: 0; right: 0">
             <a (click)="login()" class="app-bar-item c-pointer">
                 <span class="ml-2 app-bar-name">Log Out</span>
             </a>
         </div>
-        <div *ngIf="profile.id != -1" class="app-bar-container bg-light" style="z-index: 100000;position: fixed;top: 0; right: 0">
+        <div *ngIf="profile.id != -1" class="app-bar-container bg-grayBlue fg-light" style="z-index: 100000;position: fixed;top: 0; right: 0">
             <a href="#" class="app-bar-item">
                 <span class="ml-2 app-bar-name">{{profile.first_name}} {{profile.last_name}}</span>
             </a>
@@ -87,7 +92,7 @@
                     </div>
                     <div class="d-flex flex-column flex-align-center flex-justify-center">
 
-                        <button (click)="logout()" data-role="button" class="image-button light w-100 mt-5">
+                        <button (click)="logout()" data-role="button" class="image-button light w-100 mt-8">
                             <span class="icon mif-exit"></span>
                             <span class="caption">Logout</span>
                         </button>

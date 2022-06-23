@@ -7,15 +7,17 @@ import {MapComponent} from "./components/map/map.component";
 import { MainComponent } from './components/main/main.component';
 import { UploadComponent } from './components/upload/upload.component';
 import { QualityCheckComponent } from './components/quality-check/quality-check.component';
+import {AdminComponent} from "./components/admin/admin.component";
 
 
 @NgModule({
   declarations: [
-      DashboardComponent,
-      MapComponent,
-      MainComponent,
-      UploadComponent,
-      QualityCheckComponent
+    DashboardComponent,
+    MapComponent,
+    MainComponent,
+    UploadComponent,
+    QualityCheckComponent,
+    AdminComponent
   ],
   imports: [
     CommonModule,

@@ -4,7 +4,7 @@ import {LoginGuard} from "./guards/login.guard";
 import {LoginComponent} from "./modules/login/components/login/login.component";
 import {LoginAdminGuard} from "./guards/login-admin.guard";
 import {RegisterComponent} from "./modules/login/components/register/register.component";
-import {RedirectLoginGuard} from "./redirect-login.guard";
+import {RedirectLoginGuard} from "./guards/redirect-login.guard";
 import {ForgetPasswordComponent} from "./modules/login/components/forget-password/forget-password.component";
 import {GLoginComponent} from "./modules/login/components/g-login/g-login.component";
 
@@ -17,10 +17,6 @@ const routes: Routes = [
     {
         path: 'dashboard',
         loadChildren: () => import('./modules/dashboard/dashboard.module').then(dashboard => dashboard.DashboardModule)
-    },
-    {
-        path: 'admin',
-        loadChildren: () => import('./modules/admin/admin.module').then(admin => admin.AdminModule)
     }
 ];
 

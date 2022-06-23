@@ -49,3 +49,8 @@
 button:focus,.button:focus {
     box-shadow: none !important;
 }
+
+.input-material .label {
+  opacity: 1 !important;
+  top: 0 !important;
+}

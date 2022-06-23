@@ -58,7 +58,6 @@ export class MapComponent implements OnInit {
             google2fa_enable: false,
             google2fa: false
         },
-        countries: [],
         mapViews: [{id: 1, url: 'mapbox://styles/mapbox/streets-v11', view: 'Mapbox Streets', icon: 'street'},
             {id: 2, url: 'mapbox://styles/mapbox/outdoors-v11', view: 'Mapbox Outdoors', icon: 'outdoors'},
             {id: 3, url: 'mapbox://styles/mapbox/light-v10', view: 'Mapbox Light', icon: 'light'},
@@ -143,9 +142,10 @@ export class MapComponent implements OnInit {
         this.map = new mapboxgl.Map({
             container: 'map', // container id
             center: [26,5], // starting position
-            zoom: 19,
+            zoom: 5,
             accessToken: SharedService.accessToken,
-            style: this.currentView
+            style: this.currentView,
+          // projection: 'equalEarth'
         });
         this.map.addControl(
             new MapboxGeocoder({

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, UrlTree} from '@angular/router';
 import {Observable} from 'rxjs';
-import {SharedService} from "./shared.service";
+import {SharedService} from "../shared.service";
 
 @Injectable({
     providedIn: 'root'
@@ -11,32 +11,24 @@ export class RedirectLoginGuard implements CanActivate {
 
     }
 //	0	"admin"
-//	1	"data"
-// 	2	"viewer"
-// 	3	"qc"
+//	1	"upload"
+// 	2	"standard"
+// 	3	"normalise"
+// 	3	"map"
     canActivate(
         route: ActivatedRouteSnapshot,
         state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
         const isLogin = this.data.checkLogin();
         if (isLogin) {
-          switch (this.data.getRole()){
-            case '0':
-              this.data.redirect('admin/app');
-              break;
-            case '1':
-              this.data.redirect('dashboard/app/upload');
-              break;
-            case '2':
-              this.data.redirect('dashboard/app/map');
-              break;
-            case '3':
-              this.data.redirect('dashboard/app/qc');
-              break;
-            default:
-              this.data.redirect('login');
+          const route = this.data.getRole()
+          if (location.hash.indexOf('dashboard/app/'+route) === -1) {
+            this.data.redirect('dashboard/app/'+route);
+          }
+        } else {
+          if (location.hash.indexOf('login') === -1) {
+            window.location.assign(window.location.origin + '/#/login')
           }
         }
-
         return true;
     }
 

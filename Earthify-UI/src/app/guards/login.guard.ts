@@ -7,16 +7,18 @@ import {SharedService} from "../shared.service";
   providedIn: 'root'
 })
 export class LoginGuard implements CanActivate {
-    constructor(private data: SharedService) {
+  constructor(private data: SharedService) {
 
-    }
+  }
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-      const isLogin = this.data.checkLogin();
-      if (!isLogin) {
-          this.data.redirect('login');
+    const isLogin = this.data.checkLogin();
+    if (!isLogin) {
+      if (location.hash.indexOf('login') === -1) {
+        window.location.assign(window.location.origin + '/#/login')
       }
-      return isLogin;
+    }
+    return isLogin;
   }
 }

@@ -90,10 +90,13 @@ export class AdminComponent implements OnInit {
                     data.push(`Data`);
                     break;
                   case 2:
-                    data.push(`Viewer`);
+                    data.push(`Standardize`);
                     break;
                   case 3:
-                    data.push(`Quality Control`);
+                    data.push(`Normalize`);
+                    break;
+                  case 4:
+                    data.push(`Viewer`);
                     break;
                 }
               } else {
@@ -177,8 +180,9 @@ export class AdminComponent implements OnInit {
        data-cls-icon="fg-darkCyan"
 >
 <option value="1">Data</option>
-<option value="2">Viewer</option>
-<option value="3">QC</option>
+<option value="2">Standardize</option>
+<option value="3">Normalize</option>
+<option value="4">Viewer</option>
 </select></div>`;
     Metro.dialog.create({
       title: "Edit User",

@@ -223,7 +223,7 @@ export class SharedService {
     getRole(): string {
       const tok = SharedService.getCookie('access_token');
       const data = this.jwtHelper.decodeToken(tok)
-      return data.role;
+      return data.route;
     }
 
     checkLogin(): boolean {
@@ -232,31 +232,27 @@ export class SharedService {
         if (tok === '') {
             return false;
         }
+        // this.jwtHelper.getTokenExpirationDate(tok)
+        // console.log(this.jwtHelper.getTokenExpirationDate(tok))
         return !this.jwtHelper.isTokenExpired(tok);
     }
     postCheckLogin(): void {
         const loc = window.location.href;
         if (this.checkLogin()) {
             // @ts-ignore
-          switch (this.getRole()){
-            case '0':
+          const route = this.data.getRole()
+          if (route.indexOf('admin') !== -1) {
+            if (location.hash.indexOf('admin/app') === -1) {
               this.redirect('admin/app');
-              break;
-            case '1':
-              this.redirect('dashboard/app/upload');
-              break;
-            case '2':
-              this.redirect('dashboard/app/map');
-              break;
-            case '3':
-              this.redirect('dashboard/app/qc');
-              break;
-            default:
-              this.redirect('login');
+            }
+          } else {
+            if (location.hash.indexOf('dashboard/app/'+route) === -1) {
+              this.redirect('dashboard/app/'+route);
+            }
           }
         } else {
             if (loc.indexOf('/login') === -1) {
-                this.redirect('login');
+              window.location.assign(window.location.origin + '/#/login')
             }
         }
     }

@@ -17,6 +17,7 @@ export class DashboardComponent implements OnInit {
     btcUsdPrice = 0;
     currentSelectedCoin: any = {};
     currentCoinPrice = 0;
+    currentRoute = ''
     $ = $;
     profile = {
         "id": -1,
@@ -51,18 +52,16 @@ export class DashboardComponent implements OnInit {
     };
 
     constructor(private data: SharedService) {
+        this.currentRoute = this.data.getRole()
         setTimeout(() => {
             const ref = location.hash.split('/').pop();
             $(`li[routerLink="${ref}"]`).click();
-        }, 500)
+        }, 250)
     }
 
     ngOnInit(): void {
-        this.getAlerts();
-        this.getAlerts();
-        this.getInbox();
         this.getProfile();
-        this.getSettings();
+        // this.getSettings();
         this.data.currentMessage.subscribe(message => {
             if (message === 'get-settings') {
                 this.getSettings();
@@ -74,48 +73,10 @@ export class DashboardComponent implements OnInit {
                 this.cancelPendingTransactions();
             }
         });
-        this.getRates();
-        if (this.data.checkLogin()){
-
-        }
-    }
-
-    getAlerts(silent: boolean = false): void {
-        if (!silent) {
-            SharedService.loading('alerts');
-        }
-        this.data.apiGetService('notification').subscribe(
-            (result: any) => {
-                if (!silent) {
-                    SharedService.loading('alerts', true);
-                }
-                this.alerts = result;
-            },
-            (error: any) => {
-                if (!silent) {
-                    SharedService.loading('alerts', true);
-                }
-            }
-        )
-    }
-
-    getInbox(silent: boolean = false): void {
-        if (!silent){
-            SharedService.loading('inbox');
-        }
-        this.data.apiGetService('inbox').subscribe(
-            (result: any) => {
-                if (!silent) {
-                    SharedService.loading('inbox', true);
-                }
-                this.inbox = result;
-            },
-            (error: any) => {
-                if (!silent) {
-                    SharedService.loading('inbox', true);
-                }
-            }
-        )
+        // this.getRates();
+        // if (this.data.checkLogin()){
+        //
+        // }
     }
 
     getProfile(silent: boolean = false): void {
