@@ -18,10 +18,11 @@ def get_user_jobs(db: Session, user_id: int):
 
 def get_job_by_id(db: Session, job_id: str):
     data = db.query(models.Jobs).filter(models.Jobs.job_id == job_id).first()
+    data_details = db.query(models.JobDetails).filter(models.JobDetails.job_id == job_id).first()
     file_location = data.path + data.file_name
     df = gpd.read_file(file_location)
     col_name = list(df.columns)
-    return col_name
+    return {'name': data.file_name, 'details': data_details, 'columns': col_name}
 
 
 def create_job(db: Session, job: schemas.Jobs):
@@ -59,10 +60,16 @@ def create_job_details(db: Session, job_details: schemas.JobDetails):
 
 
 def delete_job(db: Session, job_id: str):
-    stm = models.Jobs.delete().where(models.Jobs.job_id == job_id)
-    db.execute(stm)
+    job = db.query(models.Jobs).filter(models.Jobs.job_id == job_id).first()
+    job_details = db.query(models.JobDetails).filter(models.JobDetails.job_id == job_id).first()
+
+    db.delete(job)
     db.commit()
-    return True
+
+    db.delete(job_details)
+    db.commit()
+
+    return {'status': True}
 
 
 def update_job(db: Session, job_id: str, status: int):
@@ -77,9 +84,23 @@ def update_job(db: Session, job_id: str, status: int):
 def start_job(db: Session, data: schemas.Data):
     job = db.query(models.Jobs).filter(models.Jobs.job_id == data.job_id).first()
     df = gpd.read_file(job.path + job.file_name)
-    col = [job.col1, job.col2, job.col3, 'geometry']
+    col = []
+    db_col = []
+    if data.col1 != '':
+        col.append(data.col1)
+        db_col.append('col1')
+    if data.col2 != '':
+        col.append(data.col2)
+        db_col.append('col2')
+    if data.col3 != '':
+        col.append(data.col3)
+        db_col.append('col3')
+    db_col.append('geometry')
+    col.append('geometry')
     df = df[col]
-    df.columns = ['col1', 'col2', 'col3', 'geometry']
+    df.columns = db_col
+    df = df.assign(job_id=data.job_id)
+    df = df[df['geometry'].apply(lambda x: x.type == 'Polygon' or x.type == 'MultiPolygon')]
     df.to_postgis('data', engine, if_exists='append')
     update_job(db, data.job_id, 1)
-    return job
+    return {'status': True, 'message': 'Job processed successfully!'}

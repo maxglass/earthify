@@ -15,6 +15,7 @@ from decouple import config
 from app import user_crud, job_crud
 from app.auth.auth_bearer import JWTBearerAdmin, JWTBearerST, JWTBearerData, JWTBearer, JWTBearerNR
 from app.auth.auth_handler import signJWT
+from app.data_crud import get_grid
 from app.model import UserLoginSchema
 
 import db.dbModel as models
@@ -83,8 +84,8 @@ async def get_jobs(db: Session = Depends(get_db), req: Request = None) -> dict:
     return job_crud.get_user_jobs(db, user.get('user_id'))
 
 
-@app.post("/start_jobs", tags=["jobs"])
-async def start_jobs(data: schemas.Data = Body(...), db: Session = Depends(get_db)) -> dict:
+@app.post("/job/process", dependencies=[Depends(JWTBearerST())], tags=["jobs"])
+async def job_process(data: schemas.Data = Body(...), db: Session = Depends(get_db)) -> dict:
     return job_crud.start_job(db, data)
 
 
@@ -116,6 +117,11 @@ async def start_jobs() -> dict:
 @app.get("/jobs/{job_id}", dependencies=[Depends(JWTBearerST())], tags=["jobsget"])
 async def get_single_job(job_id: str, db: Session = Depends(get_db)) -> dict:
     return job_crud.get_job_by_id(db, job_id)
+
+
+@app.get("/jobs/delete/{job_id}", dependencies=[Depends(JWTBearerST())], tags=["jobsget"])
+async def get_single_job(job_id: str, db: Session = Depends(get_db)) -> dict:
+    return job_crud.delete_job(db, job_id)
 
 
 @app.post("/create_job", dependencies=[Depends(JWTBearerData())], tags=["create_job"])
@@ -226,6 +232,12 @@ async def video_endpoint():
 @app.get('/users', response_model=Page[schemas.Users], tags=["user"])
 async def users(db: Session = Depends(get_db)):
     return paginate(db.query(models.User))
+
+
+@app.get('/data/{z}/{x}/{y}', tags=["jobs"])
+async def users(z: int, x: int, y: int, db: Session = Depends(get_db)):
+    tile = get_grid(db, z, x, y)
+    return Response(tile.tobytes(), media_type='application/vnd.mapbox-vector-tile')
 
 
 add_pagination(app)
