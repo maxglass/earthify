@@ -2,33 +2,190 @@
   <div class="mt-8 pb-5 pl-3 pr-3 pt-20 skill-box" style="background: rgba(255,255,255,0.7);">
     <div class="header fg-white" style="background: rgba(138, 162, 174,0.7);">
       <div class="avatar"><span class="icon mif-2x mif-chart-line"></span></div>
-      <button (click)="processJob()" style="top:30px;right: 10px;" class="button light pos-absolute small" *ngIf="currentJob != ''">Process</button>
-      <div class="title">Quality checking</div>
+      <div class="title">Standardize</div>
     </div>
-    <div class="row">
-      <div class="col-6 mr-0 p-0">
-        <div class="items-list p-0">
+    <div class="items-list p-0">
 
-          <div [ngClass]="{'bg-gray': currentJob == job.job_id}" (click)="getJobColumn(job.job_id)" class="item c-pointer" *ngFor="let job of jobs;let index = index;">
-            <span class="avatar mif-chart-line fg-amber"></span>
-            <span class="label">{{job.file_name}}</span>
-            <span class="second-label">{{job.job_id}}</span>
-          </div>
-        </div>
+      <div class="item c-pointer" *ngFor="let job of jobs;let index = index;">
+        <span class="avatar mif-chart-line fg-amber"></span>
+        <span class="label">{{job.file_name}}</span>
+        <span class="second-label">{{job.job_id}}</span>
+        <span class="second-action d-flex flex-justify-between" style="width: 260px">
+
+                      <button (click)="getJobColumn(job.job_id)" class="image-button light">
+                        <span class="icon mif-list"></span>
+                        <span class="caption">View Details</span>
+                      </button>
+
+                      <button class="image-button alert" (click)="deleteJob(job.job_id)">
+                        <span class="icon mif-bin"></span>
+                        <span class="caption">Delete Job</span>
+                      </button>
+        </span>
       </div>
-      <div class="col-6 bg-gray ml-0 pl-0" *ngIf="currentJob != ''">
+    </div>
+  </div>
+</div>
+
+<div class="dialog top-dialog" id="job-detail-dialog" data-role="dialog" data-close-button="true" data-width="720">
+  <div class="dialog-title">Job: {{job.name}}</div>
+  <div class="dialog-content pt-0 pb-0" style="overflow: auto">
+    <ul data-app-bar="false" data-role="materialtabs" class="flex-justify-center bg-lightGray">
+      <li class="active"><a href="#job-column">Standardize</a></li>
+      <li><a href="#job-details">Details</a></li>
+    </ul>
+    <div class="bg-light mt-2">
+      <div id="job-column">
+        <div class="bg-lightAmber" style="font-size: 10px">Note: Adjust the right columns to the left. All other columns will be neglected during processing</div>
         <div class="d-flex">
           <ul class="items-list">
             <li>Col 1</li>
             <li>Col 2</li>
             <li>Col 3</li>
           </ul>
-          <ul data-role="drag-items" id="job-col" class="items-list">
-
+          <ul data-role="drag-items" class="items-list" id="standard-columns">
+            <li *ngFor="let col of job.columns">{{col}}</li>
           </ul>
         </div>
+        <div class="d-flex flex-justify-end w-100 bg-light p-1" style="position: sticky;bottom: 0;z-index: 1;">
+          <button class="image-button warning" (click)="processJob()">
+            <span class="icon mif-chart-line"></span>
+            <span class="caption">Process Job</span>
+          </button>
+        </div>
+      </div>
+      <div id="job-details">
+        <form (submit)="checkForInvalid($event)" id="data-form" data-clear-invalid="3000"
+              data-role="validator" action="javascript:">
+          <div class="form-group d-flex flex-column">
+            <input value="{{job.details.description}}" type="text" name="description" data-role="input"
+                   placeholder="Enter description"
+                   data-prepend="<span class='mif-info'>"
+                   data-label="Description"
+                   data-cls-line="bg-cyan"
+                   data-cls-label="fg-cyan"
+                   data-cls-informer="fg-lightCyan"
+                   data-cls-icon="fg-darkCyan"
+                   data-validate="required minlength=6"
+            ><span class="invalid_feedback">
+                Description is required and must be at least of 6 characters
+            </span></div>
+          <div class="form-group d-flex flex-column">
+            <input value="{{job.details.country}}" type="text" name="country" data-role="input"
+                   placeholder="Enter country name"
+                   data-prepend="<span class='mif-info'>"
+                   data-label="Country"
+                   data-cls-line="bg-cyan"
+                   data-cls-label="fg-cyan"
+                   data-cls-informer="fg-lightCyan"
+                   data-cls-icon="fg-darkCyan"
+                   data-validate="required"
+            ><span class="invalid_feedback">
+                Country is required
+            </span></div>
+          <div class="form-group d-flex flex-column">
+            <input value="{{job.details.state}}" type="text" name="state" data-role="input"
+                   placeholder="Enter state name"
+                   data-prepend="<span class='mif-info'>"
+                   data-label="State"
+                   data-cls-line="bg-cyan"
+                   data-cls-label="fg-cyan"
+                   data-cls-informer="fg-lightCyan"
+                   data-cls-icon="fg-darkCyan"
+                   data-validate="required"
+            ><span class="invalid_feedback">
+                State is required
+            </span></div>
+          <div class="form-group d-flex flex-column">
+            <input value="{{job.details.county}}" type="text" name="county" data-role="input"
+                   placeholder="Enter county name"
+                   data-prepend="<span class='mif-info'>"
+                   data-label="County"
+                   data-cls-line="bg-cyan"
+                   data-cls-label="fg-cyan"
+                   data-cls-informer="fg-lightCyan"
+                   data-cls-icon="fg-darkCyan"
+                   data-validate="required"
+            ><span class="invalid_feedback">
+                County is required
+            </span></div>
+          <div class="form-group d-flex flex-column">
+            <input value="{{job.details.open_data_url}}" type="text" name="open_data_url" data-role="input"
+                   placeholder="Enter open data url"
+                   data-prepend="<span class='mif-info'>"
+                   data-label="Open Data URL"
+                   data-cls-line="bg-cyan"
+                   data-cls-label="fg-cyan"
+                   data-cls-informer="fg-lightCyan"
+                   data-cls-icon="fg-darkCyan"
+                   data-validate="required"
+            ><span class="invalid_feedback">
+                Invalid URL
+            </span></div>
+          <div class="form-group d-flex flex-column">
+            <input value="{{job.details.download_url}}" type="text" name="download_url" data-role="input"
+                   placeholder="Enter download url"
+                   data-prepend="<span class='mif-info'>"
+                   data-label="Download URL"
+                   data-cls-line="bg-cyan"
+                   data-cls-label="fg-cyan"
+                   data-cls-informer="fg-lightCyan"
+                   data-cls-icon="fg-darkCyan"
+                   data-validate="required"
+            ><span class="invalid_feedback">
+                Invalid URL
+            </span></div>
+          <div class="form-group d-flex flex-column">
+            <input value="{{job.details.mapping_service_url}}" type="text" name="mapping_service_url" data-role="input"
+                   placeholder="Enter mapping service url"
+                   data-prepend="<span class='mif-info'>"
+                   data-label="Mapping Service URL"
+                   data-cls-line="bg-cyan"
+                   data-cls-label="fg-cyan"
+                   data-cls-informer="fg-lightCyan"
+                   data-cls-icon="fg-darkCyan"
+                   data-validate="required"
+            ><span class="invalid_feedback">
+                Invalid URL
+            </span></div>
+          <div class="form-group d-flex flex-column">
+            <input value="{{job.details.property_search_url}}" type="text" name="property_search_url" data-role="input"
+                   placeholder="Enter property search url"
+                   data-prepend="<span class='mif-info'>"
+                   data-label="Property Search URL"
+                   data-cls-line="bg-cyan"
+                   data-cls-label="fg-cyan"
+                   data-cls-informer="fg-lightCyan"
+                   data-cls-icon="fg-darkCyan"
+                   data-validate="required"
+            ><span class="invalid_feedback">
+                Invalid URL
+            </span></div>
+          <div class="form-group d-flex flex-column mb-3">
+            <input value="{{job.details.tax_collect_url}}" type="text" name="tax_collect_url" data-role="input"
+                   placeholder="tax collect url"
+                   data-prepend="<span class='mif-info'>"
+                   data-label="Tax Collect URL"
+                   data-cls-line="bg-cyan"
+                   data-cls-label="fg-cyan"
+                   data-cls-informer="fg-lightCyan"
+                   data-cls-icon="fg-darkCyan"
+                   data-validate="required"
+            ><span class="invalid_feedback">
+                Invalid URL
+            </span></div>
+          <div class="d-flex flex-justify-end w-100 bg-light p-1" style="position: sticky;bottom: 0;z-index: 1;">
+            <button type="submit" class="image-button warning">
+              <span class="icon mif-cloud-upload"></span>
+              <span class="caption">Update Details</span>
+            </button>
+          </div>
+        </form>
       </div>
     </div>
-
+  </div>
+  <div class="dialog-actions d-none">
+    <button class="button js-dialog-close">Disagree</button>
+    <button class="button primary js-dialog-close">Agree</button>
   </div>
 </div>

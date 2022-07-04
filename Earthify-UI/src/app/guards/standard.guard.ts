@@ -13,11 +13,13 @@ export class StandardGuard implements CanActivate {
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+    SharedService.loading("standard", false);
     return new Promise<boolean>((accept, reject) => {
       return this.http.get(SharedService.server + "check/user/standard").subscribe((result: any) => {
-        console.log(result);
+        SharedService.loading("standard", true);
         accept(true);
       }, (error: any) => {
+        SharedService.loading("standard", true);
         if (error.status == 403) {
           this.data.logOut()
         }

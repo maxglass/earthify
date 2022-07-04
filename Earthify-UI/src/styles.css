@@ -54,3 +54,13 @@ button:focus,.button:focus {
   opacity: 1 !important;
   top: 0 !important;
 }
+
+.top-dialog {
+  top: 50px !important;
+}
+
+#job-detail-dialog .tabs-material-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}

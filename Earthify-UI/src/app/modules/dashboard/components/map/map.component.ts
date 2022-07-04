@@ -181,6 +181,24 @@ export class MapComponent implements OnInit {
                 (layer: any) => layer.type === 'symbol' && layer.layout['text-field']
             );
 
+            this.map.addSource('data-source', {
+              type: 'vector',
+              tiles: [SharedService.server + 'data/{z}/{x}/{y}']
+            });
+
+            this.map.addLayer({
+              'id': 'sub-sub-maine', // Layer ID
+              'type': 'fill',
+              'source': 'data-source', // ID of the tile source created above
+  // Source has several layers. We visualize the one with name 'sequence'.
+              'source-layer': 'default',
+              'paint': {
+                'fill-color': 'red', // blue color fill
+                'fill-opacity': 0.6,
+                'fill-outline-color': 'red'
+              }
+            })
+
 // The 'building' layer in the Mapbox Streets
 // vector tileset contains building height data
 // from OpenStreetMap.

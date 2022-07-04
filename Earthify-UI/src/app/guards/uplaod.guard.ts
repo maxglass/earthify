@@ -13,10 +13,13 @@ export class UplaodGuard implements CanActivate {
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+    SharedService.loading("upload", false);
     return new Promise<boolean>((accept, reject) => {
       return this.http.get(SharedService.server + "check/user/upload").subscribe((result: any) => {
+        SharedService.loading("upload", true);
         accept(true);
       }, (error: any) => {
+        SharedService.loading("upload", true);
         if (error.status == 403) {
           this.data.logOut()
         }

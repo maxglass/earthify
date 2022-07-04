@@ -13,11 +13,13 @@ export class NormaliseGuard implements CanActivate {
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+    SharedService.loading("normalize", false);
     return new Promise<boolean>((accept, reject) => {
       return this.http.get(SharedService.server + "check/user/normalize").subscribe((result: any) => {
-        console.log(result);
+        SharedService.loading("normalize", true);
         accept(true);
       }, (error: any) => {
+        SharedService.loading("normalize", true);
         if (error.status == 403) {
           this.data.logOut()
         }
