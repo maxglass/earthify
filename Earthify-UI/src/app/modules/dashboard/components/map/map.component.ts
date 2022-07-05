@@ -245,7 +245,8 @@ export class MapComponent implements OnInit {
                 ], // blue color fill
                 'fill-opacity': 1,
                 'fill-outline-color': 'black'
-              }
+              },
+              filter: [">=", 'count', 0]
             })
 
 
@@ -266,6 +267,7 @@ export class MapComponent implements OnInit {
               'text-halo-color': 'rgba(0,0,0,0.5)',
               'text-halo-width': 10
             },
+            filter: [">=", 'count', 0]
           })
 
 // The 'building' layer in the Mapbox Streets
