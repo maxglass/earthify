@@ -17,7 +17,7 @@ declare const MapboxGeocoder: any;
 export class MapComponent implements OnInit {
     constructor(private data: SharedService) {
     }
-    isGridVisible = false;
+    isGridVisible = true;
     is3D = false;
     isTerrain = false;
     deedId = '';
@@ -102,13 +102,11 @@ export class MapComponent implements OnInit {
         this.map.setStyle(this.currentView);
     }
     setGridVisibility(): void {
-        if (this.map.getLayoutProperty('sub-sub-maine', 'visibility') == 'none' ) {
-            this.map.setLayoutProperty('sub-sub-maine', 'visibility', 'visible');
-            this.map.setLayoutProperty('sub-sub-grid-highlighted', 'visibility', 'visible');
+        if (this.map.getLayoutProperty('theme-layer', 'visibility') == 'none' ) {
+            this.map.setLayoutProperty('theme-layer', 'visibility', 'visible');
             this.isGridVisible = true
         } else {
-            this.map.setLayoutProperty('sub-sub-maine', 'visibility', 'none');
-            this.map.setLayoutProperty('sub-sub-grid-highlighted', 'visibility', 'none');
+            this.map.setLayoutProperty('theme-layer', 'visibility', 'none');
             this.isGridVisible = false;
         }
     }
@@ -141,11 +139,20 @@ export class MapComponent implements OnInit {
         }
         this.map = new mapboxgl.Map({
             container: 'map', // container id
-            center: [26,5], // starting position
-            zoom: 5,
+            center: [-93.5653521,37.7931689], // starting position
+            zoom: 3,
             accessToken: SharedService.accessToken,
-            style: this.currentView,
-          // projection: 'equalEarth'
+            style: this.currentView,transformRequest: (url: any, resourceType: any) => {
+            if (resourceType === 'Tile' && url.indexOf('data') !== -1 || url.indexOf('counties') !== -1) {
+              return {
+                url: url,
+                headers: { 'Authorization': 'Bearer ' + SharedService.getCookie('access_token') }
+              }
+            }
+            return {
+              url: url
+            }
+          }
         });
         this.map.addControl(
             new MapboxGeocoder({
@@ -167,14 +174,7 @@ export class MapComponent implements OnInit {
                 SharedService.setCookie('userTilesLatLngs', JSON.stringify({data: {}}), 1)
             }
         }
-        this.map.on('styleimagemissing', (e: any) => {
-            this.map.loadImage(`assets/countries/${e.id}.png`, (error: any, image: any) => {
-                if (error) {
-                    return;
-                }
-                this.map.addImage(e.id, image);
-            });
-        });
+
         this.map.on('style.load', (event: any) => {
             const layers = this.map.getStyle().layers;
             const labelLayerId = layers.find(
@@ -187,7 +187,7 @@ export class MapComponent implements OnInit {
             });
 
             this.map.addLayer({
-              'id': 'sub-sub-maine', // Layer ID
+              'id': 'data-layer', // Layer ID
               'type': 'fill',
               'source': 'data-source', // ID of the tile source created above
   // Source has several layers. We visualize the one with name 'sequence'.
@@ -196,6 +196,56 @@ export class MapComponent implements OnInit {
                 'fill-color': 'red', // blue color fill
                 'fill-opacity': 0.6,
                 'fill-outline-color': 'red'
+              }
+            })
+          this.map.addLayer({
+            'id': 'data-labels',
+            'type': 'symbol',
+            'source': 'data-source',
+            'source-layer': 'default',
+            'layout': {
+              'text-field': ['get', 'col1'],
+              'text-variable-anchor': ['top', 'bottom', 'left', 'right'],
+              'text-radial-offset': 0.5,
+              'text-justify': 'auto'
+            }
+          });
+
+            this.map.addSource('county-data-source', {
+              type: 'vector',
+              tiles: [SharedService.server + 'counties/{z}/{x}/{y}']
+            });
+
+            this.map.addLayer({
+              'id': 'theme-layer', // Layer ID
+              'type': 'fill',
+              'source': 'county-data-source', // ID of the tile source created above
+  // Source has several layers. We visualize the one with name 'sequence'.
+              'source-layer': 'default',
+              'paint': {
+                'fill-color': [
+                  'step',
+                  ['get', 'count'],
+                  'rgba(21, 114, 161, 0.1)',
+                  0,
+                  'rgba(21, 114, 161, 0.5)',
+                  5,
+                  'rgba(21, 114, 161, 0.8)',
+                  10,
+                  'rgba(21, 114, 161, 0.9)'
+                ], // blue color fill
+                'fill-opacity': 1,
+                'fill-outline-color': [
+                  'step',
+                  ['get', 'count'],
+                  'rgba(21, 114, 161, 0.1)',
+                  0,
+                  'rgba(21, 114, 161, 0.5)',
+                  5,
+                  'rgba(21, 114, 161, 0.8)',
+                  10,
+                  'rgba(21, 114, 161, 0.9)'
+                ]
               }
             })
 

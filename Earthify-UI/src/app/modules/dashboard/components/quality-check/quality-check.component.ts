@@ -12,7 +12,7 @@ export class QualityCheckComponent implements OnInit {
   constructor(private data: SharedService) { }
   jobs: any = []
   job:any = {name: '', columns: [], details: {}};
-  currentJob = "";
+  currentJob = {job_id: '', status: 1};
   ngOnInit(): void {
     this.getJobs()
   }
@@ -29,27 +29,59 @@ export class QualityCheckComponent implements OnInit {
       })
   }
 
-  getJobColumn(id: any): void {
-    this.currentJob = id;
+  getJobColumn(job: any): void {
+    this.currentJob = job;
     SharedService.loading('getJobCol', false)
-    this.data.apiGetService('jobs/'+id).subscribe(
+    this.data.apiGetService('jobs/'+job.job_id).subscribe(
       (result: any) => {
         SharedService.loading('getJobCol', true)
         this.job.columns = result.columns
         this.job.details = result.details
-        this.job.name = result.name
+        this.job.name = result.name;
+        $('#user-table tbody').empty();
+        const table = $('#user-table').data('table');
+        let head: any = [];
+        const col = Object.keys(result.attributes);
+        col.forEach((c: any, index) => {
+          head.push(
+            {
+              "name": c,
+              "title": c,
+              "sortable": false
+            }
+          );
+        });
+        if (result.attributes != null) {
+          const table = $('#grid-table').data('table');
+          const rows: any = [];
+
+          const attrRows: any = Object.values(result.attributes)
+          Object.values(attrRows[0]).forEach((d: any, i: number) => {
+            let data: any = [];
+            col.forEach((c: any) => {
+                data.push(result.attributes[c][i]);
+            });
+            rows.push(data);
+          });
+          console.log(rows)
+          table.setData({header: head, data: rows});
+          table.draw();
+        } else {
+          table.setData({header: head, data: []});
+          table.draw();
+        }
         Metro.dialog.open('#job-detail-dialog')
       }, (e:any) => {
         SharedService.loading('getJobCol', true)
       })
   }
 
-  deleteJob(id: any): void {
-    this.currentJob = id;
+  deleteJob(job: any): void {
+    this.currentJob = job;
     const ctx = this;
     Metro.dialog.create({
       title: "Bid",
-      content: `Do you want to delete this job (${id})?`,
+      content: `Do you want to delete this job (${job.job_id})?`,
       actions: [
         {
           caption: "Yes Delete!",
@@ -72,7 +104,7 @@ export class QualityCheckComponent implements OnInit {
 
   postDelJob(): void {
     SharedService.loading('deleteJob', false)
-    this.data.apiGetService('jobs/delete/'+this.currentJob).subscribe(
+    this.data.apiGetService('jobs/delete/'+this.currentJob.job_id).subscribe(
       (result: any) => {
         SharedService.loading('deleteJob', true)
         SharedService.fire("Job deleted successfully", false);
@@ -83,7 +115,7 @@ export class QualityCheckComponent implements OnInit {
   }
 
   processJob(): void {
-    const body: any = {job_id: this.currentJob, col1: '', col2: '', col3: ''}
+    const body: any = {job_id: this.currentJob.job_id, col1: '', col2: '', col3: ''}
     const cols = Metro.getPlugin('#standard-columns', 'drag-items')
     cols.component.childNodes.forEach((c: any, i: number) => {
       if (i < 3) {

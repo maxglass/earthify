@@ -11,28 +11,33 @@ declare var $:any;
 export class AdminComponent implements OnInit {
 
   searchDelayId: any = -1;
-  market:any = {items: [], links: []};
+  users:any = {items: [], links: []};
+  currentPage = 1;
   constructor(private data: SharedService) {
   }
 
   ngOnInit(): void {
-    this.getMarketData();
+    this.getUsersData();
     const ctx = this;
     $(document).on('click','.edit-user', (e: any) => {
       const index = e.target.getAttribute('value');
-      ctx.editUser(this.market.items[index])
+      ctx.editUser(this.users.items[index])
     })
     $(document).on('click','.del-user', (e: any) => {
       const index = e.target.getAttribute('value');
-      ctx.delUser(this.market.items[index])
+      ctx.delUser(this.users.items[index])
+    })
+    $(document).on('click','.password-user', (e: any) => {
+      const index = e.target.getAttribute('value');
+      ctx.changeUserPass(this.users.items[index])
     })
   }
 
-  getMarketData(url: string = '?page=1'): void {
+  getUsersData(url: string = '?page=1'): void {
     let page: any = url.split("=");
     let perPage: any = Number($('#per-page').val());
     page = page[page.length -1];
-    if (perPage != this.market.per_page){
+    if (perPage != this.users.per_page){
       // page = 1
     }
     let search = $('#search').val();
@@ -41,16 +46,16 @@ export class AdminComponent implements OnInit {
     } else {
       search = `%${search}%`;
     }
-    SharedService.loading('marketplace');
+    SharedService.loading('users');
     this.data.apiGetService(`users?page=${page}&size=${perPage}`).subscribe(
       (result: any) => {
-        SharedService.loading('marketplace', true);
-        this.market = result;
+        SharedService.loading('users', true);
+        this.users = result;
         $('#per-page').off('change');
         Metro.getPlugin('#per-page', 'select').val(result.per_page);
         $('#per-page').on('change', ()=>{
           $('#per-page').off('change');
-          this.getMarketData()
+          this.getUsersData()
         });
         $('#user-table tbody').empty();
         const table = $('#user-table').data('table');
@@ -107,6 +112,7 @@ export class AdminComponent implements OnInit {
             if (d["role_id"] !== 0) {
               data.push(`
 <button value="${i}" class="edit-user button small light">Edit</button>
+<button value="${i}" class="password-user button small info">Change Password</button>
 <button value="${i}" class="del-user button small alert">Delete</button>
 `)
             }
@@ -121,7 +127,7 @@ export class AdminComponent implements OnInit {
 
       },
       (error: any) => {
-        SharedService.loading('marketplace', true);
+        SharedService.loading('users', true);
       }
     )
   }
@@ -129,14 +135,14 @@ export class AdminComponent implements OnInit {
   onSearch(e: any): void {
     const val = $('#search').val();
     if ((e.keyCode == 13) || e.keyCode == undefined) {
-      this.getMarketData();
+      this.getUsersData();
       return;
     }
     clearTimeout(this.searchDelayId);
     this.searchDelayId = setTimeout(() => {
       const currentVal = $('#search').val();
-      if ((val == currentVal && currentVal.length > 0) || this.market.items.length == 0) {
-        this.getMarketData();
+      if ((val == currentVal && currentVal.length > 0) || this.users.items.length == 0) {
+        this.getUsersData();
       }
     }, 1000);
   }
@@ -154,7 +160,7 @@ export class AdminComponent implements OnInit {
 
   editUser(data: any): void {
     const ctx = this;
-    const html = `<div id="property-error-div"></div><div class="form-group">
+    const html = `<ul id="property-error-div"></ul><div class="form-group">
 <input type="text" id="first-name" data-role="materialinput" value="${data['first_name']}"
        placeholder="Enter first name"
        data-icon="<span class='mif-info'>"
@@ -163,14 +169,16 @@ export class AdminComponent implements OnInit {
        data-cls-label="fg-cyan"
        data-cls-informer="fg-lightCyan"
        data-cls-icon="fg-darkCyan"
+       data-validate="required minlength=2"
 ><input type="text" id="last-name" data-role="materialinput" value="${data['last_name']}"
-       placeholder="Enter first name"
+       placeholder="Enter last name"
        data-icon="<span class='mif-info'>"
        data-label="First name"
        data-cls-line="bg-cyan"
        data-cls-label="fg-cyan"
        data-cls-informer="fg-lightCyan"
        data-cls-icon="fg-darkCyan"
+       data-validate="required minlength=2"
 ><select type="text" id="role" data-role="select" value="${data['role_id']}"
        data-icon="<span class='mif-info'>"
        data-label="Role"
@@ -181,26 +189,46 @@ export class AdminComponent implements OnInit {
 >
 <option value="1">Data</option>
 <option value="2">Standardize</option>
-<option value="3">Normalize</option>
+<!--<option value="3">Normalize</option>-->
 <option value="4">Viewer</option>
 </select></div>`;
     Metro.dialog.create({
       title: "Edit User",
       content: html,
-      clsDialog: 'buy-land-dialog',
+      clsDialog: 'edit-user-dialog top-dialog',
       actions: [
         {
           caption: "Update",
           cls: "success",
           onclick: function(){
-            const name = $('#property-name').val();
-            if (name.length < 2) {
-              $('#property-error-div').empty().append("Property name must be at least 2 characters");
+            $('#property-error-div').empty();
+            const validate = Metro.validator;
+            const fname = $('#first-name');
+            const lname = $('#last-name');
+            const role = $('#role');
+            const errors = [];
+
+            if (!validate.validate(fname)) {
+              errors.push("First name must be at least 2 characters");
+            }
+            if (!validate.validate(lname)) {
+              errors.push("Last name must be at least 2 characters");
+            }
+            if (errors.length > 0 ) {
+              errors.forEach((error: any) => {
+                $('#property-error-div').append(`<li>${error}</li>`)
+              });
+              setTimeout(() => {$('#property-error-div').empty();}, 5000);
               SharedService.invalidForm('#property-error-div');
               return;
             }
-            Metro.dialog.close('.buy-land-dialog');
-            // ctx.buyLandRequest(name);
+            Metro.dialog.close('.edit-user-dialog');
+            ctx.postEditUser({
+              email: data.email,
+              first_name: fname.val(),
+              last_name: lname.val(),
+              role_id: role.val(),
+            })
           }
         },
         {
@@ -211,6 +239,97 @@ export class AdminComponent implements OnInit {
           }
         }
       ]
+    });
+  }
+
+  postEditUser(body: any): void {
+    SharedService.loading('update_user', false);
+    this.data.apiService('user/update', body).subscribe((result: any) => {
+      SharedService.loading('update_user', true);
+      SharedService.fire("User updated successfully", false);
+      this.getUsersData();
+    },(error: any) => {
+      SharedService.loading('update_user', true);
+    });
+  }
+
+  changeUserPass(data: any): void {
+    const ctx = this;
+    const html = `<ul id="property-error-div"></ul><div class="form-group">
+<input type="text" id="password" name="password" data-role="materialinput"
+       placeholder="Enter Password"
+       data-icon="<span class='mif-lock'>"
+       data-label="New Password"
+       data-cls-line="bg-cyan"
+       data-cls-label="fg-cyan"
+       data-cls-informer="fg-lightCyan"
+       data-cls-icon="fg-darkCyan"
+       data-validate="required minlength=8"
+><input type="text" id="repassword" name="repassword" data-role="materialinput"
+       placeholder="Renter Password"
+       data-icon="<span class='mif-lock'>"
+       data-label="Renter Password"
+       data-cls-line="bg-cyan"
+       data-cls-label="fg-cyan"
+       data-cls-informer="fg-lightCyan"
+       data-cls-icon="fg-darkCyan"
+       data-validate="required compare=password"
+>
+</div>`;
+    Metro.dialog.create({
+      title: "Change User Password",
+      content: html,
+      clsDialog: 'edit-password-dialog top-dialog',
+      actions: [
+        {
+          caption: "Change",
+          cls: "success",
+          onclick: function(){
+            $('#property-error-div').empty();
+            const validate = Metro.validator;
+            const password = $('#password');
+            const repass = $('#repassword');
+            const errors = [];
+
+            if (!validate.validate(repass)) {
+              errors.push("Password must be matched and 8 character long");
+            }
+            if (errors.length > 0 ) {
+              errors.forEach((error: any) => {
+                $('#property-error-div').append(`<li>${error}</li>`)
+              });
+              setTimeout(() => {$('#property-error-div').empty();}, 5000);
+              SharedService.invalidForm('#property-error-div');
+              return;
+            }
+            Metro.dialog.close('.edit-password-dialog');
+            // ctx.buyLandRequest(name);
+            ctx.postChangePassword({
+              email: data.email,
+              password: password.val()
+            })
+          }
+        },
+        {
+          caption: "Cancel",
+          cls: "js-dialog-close light",
+          onclick: function(){
+
+          }
+        }
+      ]
+    });
+  }
+
+
+  postChangePassword(body: any): void {
+    SharedService.loading('password_user', false);
+    this.data.apiService('user/change/password', body).subscribe((result: any) => {
+      SharedService.loading('password_user', true);
+      SharedService.fire("User password changed successfully", false);
+      this.getUsersData();
+    },(error: any) => {
+      SharedService.loading('password_user', true);
     });
   }
 
@@ -227,7 +346,7 @@ export class AdminComponent implements OnInit {
           onclick: function(){
 
             Metro.dialog.close('.buy-land-dialog');
-            // ctx.buyLandRequest(name);
+            ctx.postDeleteUser(data['email']);
           }
         },
         {
@@ -239,5 +358,162 @@ export class AdminComponent implements OnInit {
         }
       ]
     });
+  }
+
+
+  postDeleteUser(id: any): void {
+    SharedService.loading('delete_user', false);
+    this.data.apiGetService('user/delete/'+id).subscribe((result: any) => {
+      SharedService.loading('delete_user', true);
+      SharedService.fire("User deleted successfully", false);
+      this.getUsersData();
+    },(error: any) => {
+      SharedService.loading('delete_user', true);
+    });
+  }
+
+  addUser(): void {
+    const ctx = this;
+    const html = `
+<div class="form-group">
+<input autocomplete="off" type="text" id="first_name" data-role="materialinput"
+ placeholder="Enter first name"
+ data-icon="<span class='mif-info'>"
+ data-label="First Name"
+ data-cls-line="bg-cyan"
+ data-cls-label="fg-cyan"
+ data-cls-informer="fg-lightCyan"
+ data-cls-icon="fg-darkCyan"
+ data-validate="required minlength=3"
+>
+<input autocomplete="off" type="text" id="last_name" data-role="materialinput"
+ placeholder="Enter last name"
+ data-icon="<span class='mif-info'>"
+ data-label="Last Name"
+ data-cls-line="bg-cyan"
+ data-cls-label="fg-cyan"
+ data-cls-informer="fg-lightCyan"
+ data-cls-icon="fg-darkCyan"
+ data-validate="required minlength=3"
+>
+<input autocomplete="off" type="email" id="email" data-role="materialinput"
+ placeholder="Enter email"
+ data-icon="<span class='mif-envelop'>"
+ data-label="Email"
+ data-cls-line="bg-cyan"
+ data-cls-label="fg-cyan"
+ data-cls-informer="fg-lightCyan"
+ data-cls-icon="fg-darkCyan"
+ data-validate="required email"
+>
+<input autocomplete="off" type="password" name="password" id="password" data-role="materialinput"
+ placeholder="Enter new password"
+ data-icon="<span class='mif-lock'>"
+ data-label="New Password"
+ data-cls-line="bg-cyan"
+ data-cls-label="fg-cyan"
+ data-cls-informer="fg-lightCyan"
+ data-cls-icon="fg-darkCyan"
+ data-validate="required"
+>
+<input autocomplete="off" type="password" id="re-password" data-role="materialinput"
+ placeholder="Retype new password"
+ data-icon="<span class='mif-lock'>"
+ data-label="Retype New Password"
+ data-cls-line="bg-cyan"
+ data-cls-label="fg-cyan"
+ data-cls-informer="fg-lightCyan"
+ data-cls-icon="fg-darkCyan"
+ data-validate="required compare=password minlength=8"
+>
+<select autocomplete="off" type="text" id="user-role" data-role="select"
+ placeholder="Select user role"
+ data-icon="<span class='mif-users'>"
+ data-label="User Role"
+ data-cls-line="bg-cyan"
+ data-cls-label="fg-cyan"
+ data-cls-informer="fg-lightCyan"
+ data-cls-icon="fg-darkCyan"
+>
+<option value="1">Data</option>
+<option value="2">Standardize</option>
+<!--<option value="3">Normalize</option>-->
+<option value="4" selected>Viewer</option>
+</select>
+<ul id="property-error-div" class="fg-red"></ul>
+</div>`;
+    Metro.dialog.create({
+      title: `New User`,
+      content: html,
+      clsDialog: 'add-user-dialog top-dialog',
+      actions: [
+        {
+          caption: "Add User",
+          cls: "dark",
+          onclick: function(){
+            $('#property-error-div').empty();
+            const validator = Metro.validator;
+            const errors: any = [];
+            const fname = $("#first_name"); // for input must be defined validation functions
+            const lname = $("#last_name"); // for input must be defined validation functions
+            const email = $('#email');
+            const rePass = $('#re-password');
+            if (!validator.validate(fname)) {
+              errors.push("First name should be at least of 3 characters");
+            }
+            if (!validator.validate(lname)) {
+              errors.push("Last name should be at least of 3 characters");
+            }
+            if (!validator.validate(email)) {
+              errors.push("Email is not valid");
+            }
+            if (!validator.validate(rePass)) {
+              errors.push("Passwords must me matched. With minimum 8 characters");
+            }
+            if (errors.length > 0) {
+              errors.forEach((error: any) => {
+                $('#property-error-div').append(`<li>${error}</li>`);
+              });
+              setTimeout(()=>{$('#property-error-div').empty()},5000)
+              SharedService.invalidForm('#property-error-div');
+              return;
+            }
+            Metro.dialog.close('.add-user-dialog');
+            ctx.postAddUser({
+              first_name: fname.val(),
+              last_name: lname.val(),
+              email: email.val(),
+              password: rePass.val(),
+              role_id: $('#user-role').val(),
+            });
+          }
+        },
+        {
+          caption: "Cancel",
+          cls: "js-dialog-close light",
+          onclick: function(){
+
+          }
+        }
+      ]
+    });
+    setTimeout(() => {$('#email, #password').val('')}, 1000)
+  }
+
+  postAddUser(body: any): void {
+    SharedService.loading('add-user', false);
+    this.data.apiService('user/add', body).subscribe(
+      (results: any) => {
+        SharedService.loading('add-user', true);
+        SharedService.fire(results.message, !results.status);
+        if (results.status) {
+          this.getUsersData();
+        }
+      },
+      (error: any) => {
+        SharedService.loading('add-user', true);
+
+      }
+    )
   }
 }

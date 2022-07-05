@@ -12,12 +12,12 @@
         <span class="second-label">{{job.job_id}}</span>
         <span class="second-action d-flex flex-justify-between" style="width: 260px">
 
-                      <button (click)="getJobColumn(job.job_id)" class="image-button light">
+                      <button (click)="getJobColumn(job)" class="image-button light">
                         <span class="icon mif-list"></span>
                         <span class="caption">View Details</span>
                       </button>
 
-                      <button class="image-button alert" (click)="deleteJob(job.job_id)">
+                      <button *ngIf="job.status == 0" class="image-button alert" (click)="deleteJob(job)">
                         <span class="icon mif-bin"></span>
                         <span class="caption">Delete Job</span>
                       </button>
@@ -33,6 +33,7 @@
     <ul data-app-bar="false" data-role="materialtabs" class="flex-justify-center bg-lightGray">
       <li class="active"><a href="#job-column">Standardize</a></li>
       <li><a href="#job-details">Details</a></li>
+      <li><a href="#job-attributes">Attributes</a></li>
     </ul>
     <div class="bg-light mt-2">
       <div id="job-column">
@@ -47,7 +48,7 @@
             <li *ngFor="let col of job.columns">{{col}}</li>
           </ul>
         </div>
-        <div class="d-flex flex-justify-end w-100 bg-light p-1" style="position: sticky;bottom: 0;z-index: 1;">
+        <div *ngIf="currentJob.status == 0" class="d-flex flex-justify-end w-100 bg-light p-1" style="position: sticky;bottom: 0;z-index: 1;">
           <button class="image-button warning" (click)="processJob()">
             <span class="icon mif-chart-line"></span>
             <span class="caption">Process Job</span>
@@ -182,6 +183,19 @@
           </div>
         </form>
       </div>
+      <div id="job-attributes">
+        <div class="bg-lightAmber" style="font-size: 10px">Note: Limited Attributes</div>
+        <table id="grid-table" class="table"
+               data-role="table"
+               data-show-search="false"
+               data-show-rows-steps="false"
+               data-show-table-info="false"
+               data-show-pagination="false"
+        >
+
+        </table>
+      </div>
+
     </div>
   </div>
   <div class="dialog-actions d-none">

@@ -64,3 +64,11 @@ button:focus,.button:focus {
   top: 0;
   z-index: 1;
 }
+
+app-dashboard .tab-marker {
+  background-color: #607d8b!important;
+}
+
+.table-container {
+  overflow: auto !important;
+}
