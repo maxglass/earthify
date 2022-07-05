@@ -178,3 +178,33 @@ class JWTBearerNR(HTTPBearer):
                 if role == 3 or role == 0:
                     isTokenValid = True
         return isTokenValid
+
+
+class JWTBearerAll(HTTPBearer):
+    def __init__(self, auto_error: bool = True):
+        super(JWTBearerAll, self).__init__(auto_error=auto_error)
+
+    async def __call__(self, request: Request):
+        credentials: HTTPAuthorizationCredentials = await super(JWTBearerAll, self).__call__(request)
+        if credentials:
+            if not credentials.scheme == "Bearer":
+                raise HTTPException(status_code=403, detail="Invalid authentication scheme.")
+            if not self.verify_jwt(credentials.credentials):
+                raise HTTPException(status_code=403, detail="Invalid token or expired token.")
+            return credentials.credentials
+        else:
+            raise HTTPException(status_code=403, detail="Invalid authorization code.")
+
+
+    def verify_jwt(self, jwtoken: str) -> bool:
+        isTokenValid: bool = False
+        try:
+            payload = decodeJWT(jwtoken)
+        except:
+            payload = None
+        if payload:
+            email = payload.get('email')
+            role = getRoleFromDB(email)
+            if role is not None:
+                isTokenValid = True
+        return isTokenValid

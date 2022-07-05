@@ -22,7 +22,13 @@ def get_job_by_id(db: Session, job_id: str):
     file_location = data.path + data.file_name
     df = gpd.read_file(file_location)
     col_name = list(df.columns)
-    return {'name': data.file_name, 'details': data_details, 'columns': col_name}
+    col_filter = col_name
+    if "geom" in col_filter:
+        col_filter.remove("geom")
+    if "geometry" in col_filter:
+        col_filter.remove("geometry")
+    df = df[col_filter]
+    return {'name': data.file_name, 'details': data_details, 'columns': col_name, 'attributes': df.head(15)}
 
 
 def create_job(db: Session, job: schemas.Jobs):

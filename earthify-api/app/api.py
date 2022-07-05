@@ -13,9 +13,9 @@ from sqlalchemy.orm import Session
 from decouple import config
 
 from app import user_crud, job_crud
-from app.auth.auth_bearer import JWTBearerAdmin, JWTBearerST, JWTBearerData, JWTBearer, JWTBearerNR
+from app.auth.auth_bearer import JWTBearerAdmin, JWTBearerST, JWTBearerData, JWTBearer, JWTBearerNR, JWTBearerAll
 from app.auth.auth_handler import signJWT
-from app.data_crud import get_grid
+from app.data_crud import get_grid, get_grid_count, get_county_grid
 from app.model import UserLoginSchema
 
 import db.dbModel as models
@@ -28,6 +28,7 @@ from fastapi_pagination import Page, add_pagination
 from fastapi_pagination.ext.sqlalchemy import paginate
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
+import geopandas as gpd
 
 posts = [
     {
@@ -37,7 +38,6 @@ posts = [
     }
 ]
 
-users = []
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -65,9 +65,17 @@ def get_db():
         db.close()
 
 
+if get_grid_count(SessionLocal()) == 0:
+    counties = os.path.abspath(__file__).replace("app/api.py", "uploads/USA_STATES.geojson")
+    counties_df = gpd.read_file(counties)
+    counties_df = counties_df[["NAME", "geometry"]]
+    counties_df.insert(0, 'id', range(1, 1 + len(counties_df)))
+    counties_df.to_postgis('counties', engine, if_exists='append')
+
+
 @app.get("/", tags=["root"])
-async def read_root() -> dict:
-    return {"message": "Welcome to your blog!."}
+async def read_root(db: Session = Depends(get_db)) -> dict:
+    return {"message": "Welcome to your blog!.", "c": get_grid_count(db)}
 
 
 @app.get("/jobs", dependencies=[Depends(JWTBearerST())], tags=["jobs"])
@@ -150,14 +158,13 @@ async def create_job(file: UploadFile = File(...), req: Request = None, db: Sess
     return {"status": True, "message": f"Successfully uploaded {job.file_name}", "job_id":  job.job_id}
 
 
-@app.post("/create_job_details", tags=["create_job"])
+@app.post("/create_job_details", dependencies=[Depends(JWTBearerData())], tags=["create_job"])
 async def create_job_details(data: schemas.JobDetails = Body(...), db: Session = Depends(get_db)):
     return job_crud.create_job_details(db, data)
 
 
 @app.post("/user/signup", tags=["user"])
 async def create_user(user: schemas.User = Body(...), db: Session = Depends(get_db)):
-    users.append(user)  # replace with db call, making sure to hash the password first
     new_user = models.User()
     new_user.email = user.email
     new_user.password = user.password
@@ -165,6 +172,13 @@ async def create_user(user: schemas.User = Body(...), db: Session = Depends(get_
     new_user.last_name = user.last_name
     insertUser = user_crud.create_user(db, new_user)
     return signJWT(user.email, insertUser.id, 4)
+
+
+@app.post("/user/add", dependencies=[Depends(JWTBearerAdmin)], tags=["user"])
+async def create_user(user: schemas.AddUser = Body(...), db: Session = Depends(get_db)):
+    user_crud.create_user(db, user)
+    return {'status': True, "message": "User created successfully"}
+
 
 
 def check_user(user: UserLoginSchema, db):
@@ -197,12 +211,17 @@ def auth(req: Request):
         return None
 
 
-@app.post("/user/{user_id}/update", tags=["user-update"])
-async def user_update(user_id: int, user: schemas.UserUpdate = Body(...), db: Session = Depends(get_db)):
-    return user_crud.update_user(db, user_id, user)
+@app.post("/user/update", dependencies=[Depends(JWTBearerAdmin)], tags=["user-update"])
+async def user_update(user: schemas.UserUpdate = Body(...), db: Session = Depends(get_db)):
+    return user_crud.update_user(db, user)
 
 
-@app.get("/profile", tags=["user"])
+@app.post("/user/change/password", dependencies=[Depends(JWTBearerAdmin)], tags=["user-update"])
+async def user_update(user: schemas.UserPassword = Body(...), db: Session = Depends(get_db)):
+    return user_crud.change_password(db, user)
+
+
+@app.get("/profile", dependencies=[Depends(JWTBearerAll())], tags=["user"])
 async def user_update(req: Request = None, db: Session = Depends(get_db)):
     email = auth(req).get('email')
     data = user_crud.get_user_by_email(db, email)
@@ -211,9 +230,9 @@ async def user_update(req: Request = None, db: Session = Depends(get_db)):
     return data
 
 
-@app.get("/user/delete/{user_id}", tags=["user-update"])
-async def user_delete(user_id: int, db: Session = Depends(get_db)):
-    return user_crud.update_user()
+@app.get("/user/delete/{email}", dependencies=[Depends(JWTBearerAdmin())], tags=["user-update"])
+async def user_delete(email: str, db: Session = Depends(get_db)):
+    return user_crud.delete_user(db, email)
 
 
 @app.get('/send-email/{email}', tags=["email"])
@@ -229,14 +248,20 @@ async def video_endpoint():
     return FileResponse(os.path.abspath(__file__).replace("app/api.py","uploads/earth.mp4"))
 
 
-@app.get('/users', response_model=Page[schemas.Users], tags=["user"])
+@app.get('/users', response_model=Page[schemas.Users], dependencies=[Depends(JWTBearerAdmin())], tags=["user"])
 async def users(db: Session = Depends(get_db)):
     return paginate(db.query(models.User))
 
 
-@app.get('/data/{z}/{x}/{y}', tags=["jobs"])
+@app.get('/data/{z}/{x}/{y}', dependencies=[Depends(JWTBearerAll())], tags=["jobs"])
 async def users(z: int, x: int, y: int, db: Session = Depends(get_db)):
     tile = get_grid(db, z, x, y)
+    return Response(tile.tobytes(), media_type='application/vnd.mapbox-vector-tile')
+
+
+@app.get('/counties/{z}/{x}/{y}', dependencies=[Depends(JWTBearerAll())], tags=["jobs"])
+async def users(z: int, x: int, y: int, db: Session = Depends(get_db)):
+    tile = get_county_grid(db, z, x, y)
     return Response(tile.tobytes(), media_type='application/vnd.mapbox-vector-tile')
 
 

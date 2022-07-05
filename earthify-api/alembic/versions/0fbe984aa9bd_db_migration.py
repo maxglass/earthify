@@ -32,6 +32,14 @@ def upgrade() -> None:
     )
     op.create_index(op.f('ix_data_id'), 'data', ['id'], unique=False)
     op.create_index(op.f('ix_data_job_id'), 'data', ['job_id'], unique=False)
+
+    op.create_table('counties',
+    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
+    sa.Column('NAME', sa.String(), nullable=True),
+    sa.Column('geometry', gsa.Geometry('GEOMETRY', 4326), nullable=False),
+    )
+    op.create_index(op.f('ix_counties_id'), 'counties', ['id'], unique=False)
+
     op.create_table('jobs',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('job_id', sa.String(), nullable=True),
@@ -151,4 +159,6 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_data_job_id'), table_name='data')
     op.drop_index(op.f('ix_data_id'), table_name='data')
     op.drop_table('data')
+    op.drop_index(op.f('ix_counties_id'), table_name='counties')
+    op.drop_table('counties')
     # ### end Alembic commands ###

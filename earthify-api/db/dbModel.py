@@ -62,4 +62,10 @@ class Data(Base):
     attributes = Column(JSON)
 
 
+class County(Base):
+    __tablename__ = 'counties'
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    NAME = Column(Integer, primary_key=True, index=True)
+
+
 

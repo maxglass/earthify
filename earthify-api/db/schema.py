@@ -25,6 +25,17 @@ class Users(BaseModel):
         orm_mode = True
 
 
+class AddUser(BaseModel):
+    email: str
+    first_name: str
+    last_name: str
+    role_id: int
+    password: str
+
+    class Config:
+        orm_mode = True
+
+
 class UserRoles(BaseModel):
     role_id: int
     title: str
@@ -72,15 +83,28 @@ class Data(BaseModel):
 
 
 class UserUpdate(BaseModel):
-    password: str
+    email: str
     first_name: str
     last_name: str
+    role_id: int
 
     class Config:
         schema_extra = {
             "example": {
                 "first_name": "First name",
                 "last_name": "Last name",
+                "role": "User Role"
+            }
+        }
+
+
+class UserPassword(BaseModel):
+    email: str
+    password: str
+
+    class Config:
+        schema_extra = {
+            "example": {
                 "password": "any password"
             }
         }
