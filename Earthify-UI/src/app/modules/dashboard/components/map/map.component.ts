@@ -104,9 +104,11 @@ export class MapComponent implements OnInit {
     setGridVisibility(): void {
         if (this.map.getLayoutProperty('theme-layer', 'visibility') == 'none' ) {
             this.map.setLayoutProperty('theme-layer', 'visibility', 'visible');
+            this.map.setLayoutProperty('theme-count-layer', 'visibility', 'visible');
             this.isGridVisible = true
         } else {
             this.map.setLayoutProperty('theme-layer', 'visibility', 'none');
+            this.map.setLayoutProperty('theme-count-layer', 'visibility', 'none');
             this.isGridVisible = false;
         }
     }
@@ -207,8 +209,13 @@ export class MapComponent implements OnInit {
               'text-field': ['get', 'col1'],
               'text-variable-anchor': ['top', 'bottom', 'left', 'right'],
               'text-radial-offset': 0.5,
-              'text-justify': 'auto'
-            }
+              'text-justify': 'auto',
+              'text-size': 10,
+              'text-halo-color': 'white',
+              'text-color': 'red',
+              'text-halo-width': 1
+            },
+            minzoom: 10
           });
 
             this.map.addSource('county-data-source', {
@@ -248,6 +255,26 @@ export class MapComponent implements OnInit {
                 ]
               }
             })
+
+
+          this.map.addLayer({
+            'id': 'theme-count-layer', // Layer ID
+            'type': 'symbol',
+            'source': 'county-data-source', // ID of the tile source created above
+            // Source has several layers. We visualize the one with name 'sequence'.
+            'source-layer': 'default',
+            'layout': {
+              'text-field': ['get', 'count'],
+              'text-size': 11,
+              'text-transform': 'uppercase',
+              'text-padding': 10
+            },
+            'paint': {
+              'text-color': '#fff',
+              'text-halo-color': 'rgba(0,0,0,0.5)',
+              'text-halo-width': 10
+            },
+          })
 
 // The 'building' layer in the Mapbox Streets
 // vector tileset contains building height data
