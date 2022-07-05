@@ -211,6 +211,8 @@ export class MapComponent implements OnInit {
               'text-radial-offset': 0.5,
               'text-justify': 'auto',
               'text-size': 10,
+            },
+            paint: {
               'text-halo-color': 'white',
               'text-color': 'red',
               'text-halo-width': 1
@@ -242,17 +244,7 @@ export class MapComponent implements OnInit {
                   'rgba(21, 114, 161, 0.9)'
                 ], // blue color fill
                 'fill-opacity': 1,
-                'fill-outline-color': [
-                  'step',
-                  ['get', 'count'],
-                  'rgba(21, 114, 161, 0.1)',
-                  0,
-                  'rgba(21, 114, 161, 0.5)',
-                  5,
-                  'rgba(21, 114, 161, 0.8)',
-                  10,
-                  'rgba(21, 114, 161, 0.9)'
-                ]
+                'fill-outline-color': 'black'
               }
             })
 
