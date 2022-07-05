@@ -1,3 +1,4 @@
+import json
 import uuid
 
 from sqlalchemy.orm import Session
@@ -28,7 +29,7 @@ def get_job_by_id(db: Session, job_id: str):
     if "geometry" in col_filter:
         col_filter.remove("geometry")
     df = df[col_filter]
-    return {'name': data.file_name, 'details': data_details, 'columns': col_name, 'attributes': df.head(15)}
+    return {'name': data.file_name, 'details': data_details, 'columns': col_name, 'attributes':  json.loads(json.dumps(list(df.head(15).T.to_dict().values())))}
 
 
 def create_job(db: Session, job: schemas.Jobs):
