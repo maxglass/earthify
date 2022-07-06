@@ -41,24 +41,6 @@ export class QualityCheckComponent implements OnInit {
         $('#grid-table tbody').empty();
         const table = $('#grid-table').data('table');
         let head: any = [];
-        result.attributes = [{
-          BORDER_COL: "RGB(0,0,0)",
-          BORDER_STY: "Solid",
-          BORDER_WID: 1,
-          CLOSED: "YES",
-          DATE_EDIT: "3/27/2008",
-          FILL_STYLE: "No Fill",
-          GIS_LOC_ID: null,
-          GIS_NOTES: "Lands - http://landsnet.nps.gov/tractsnet/documents/BRCA/Metadata/brca_metadata.xml",
-          GROUP_CODE: null,
-          LANDS_CODE: null,
-          LAYER: "Unknown Area Type",
-          MAP_NAME: "nps_boundary.shp",
-          META_MIDF: null,
-          UNIT_CODE: "BRCA",
-          UNIT_NAME: "Bryce Canyon",
-          UNIT_TYPE: "National Park",
-        }]
         const col = Object.keys(result.attributes[0]);
         col.forEach((c: any, index) => {
           head.push(

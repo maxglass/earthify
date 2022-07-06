@@ -5,7 +5,7 @@
       <div class="title">Upload data</div>
     </div>
     <div [ngClass]="{'d-none': file != null}">
-      <input (change)="getFile($event)" type="file" data-role="file" data-mode="drop" accept=".geojson,.kml,.shp,.gpkg">
+      <input (change)="getFile($event)" type="file" data-role="file" data-mode="drop" accept=".geojson,.kml,.gpkg,.zip">
     </div>
     <div class="form-group" [ngClass]="{'d-none': file == null}">
       <form (submit)="checkForInvalid($event)" id="data-form" data-clear-invalid="3000"
