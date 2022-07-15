@@ -38,7 +38,13 @@ def upgrade() -> None:
     sa.Column('NAME', sa.String(), nullable=True),
     sa.Column('geometry', gsa.Geometry('GEOMETRY', 4326), nullable=False),
     )
-    op.create_index(op.f('ix_counties_id'), 'counties', ['id'], unique=False)
+
+    op.create_table('states',
+    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
+    sa.Column('NAME', sa.String(), nullable=True),
+    sa.Column('geometry', gsa.Geometry('GEOMETRY', 4326), nullable=False),
+    )
+    op.create_index(op.f('ix_states_id'), 'states', ['id'], unique=False)
 
     op.create_table('jobs',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),

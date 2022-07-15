@@ -15,7 +15,7 @@ from decouple import config
 from app import user_crud, job_crud
 from app.auth.auth_bearer import JWTBearerAdmin, JWTBearerST, JWTBearerData, JWTBearer, JWTBearerNR, JWTBearerAll
 from app.auth.auth_handler import signJWT
-from app.data_crud import get_grid, get_grid_count, get_county_grid
+from app.data_crud import get_grid, get_county_grid, get_counties, get_state_count, get_county_count, get_states
 from app.model import UserLoginSchema
 
 import db.dbModel as models
@@ -65,17 +65,26 @@ def get_db():
         db.close()
 
 
-if get_grid_count(SessionLocal()) == 0:
+if get_state_count(SessionLocal()) == 0:
     counties = os.path.abspath(__file__).replace("app/api.py", "uploads/USA_STATES.geojson")
     counties_df = gpd.read_file(counties)
     counties_df = counties_df[["NAME", "geometry"]]
+    counties_df.insert(0, 'id', range(1, 1 + len(counties_df)))
+    counties_df.to_postgis('states', engine, if_exists='append')
+
+
+if get_county_count(SessionLocal()) == 0:
+    counties = os.path.abspath(__file__).replace("app/api.py", "uploads/county_20m.zip")
+    counties_df = gpd.read_file(counties)
+    counties_df = counties_df[["NAME", "geometry"]]
+    counties_df = counties_df.to_crs(4326)
     counties_df.insert(0, 'id', range(1, 1 + len(counties_df)))
     counties_df.to_postgis('counties', engine, if_exists='append')
 
 
 @app.get("/", tags=["root"])
 async def read_root(db: Session = Depends(get_db)) -> dict:
-    return {"message": "Welcome to your blog!.", "c": get_grid_count(db)}
+    return {"message": "Welcome to your blog!."}
 
 
 @app.get("/jobs", dependencies=[Depends(JWTBearerST())], tags=["jobs"])
@@ -154,8 +163,18 @@ async def create_job(file: UploadFile = File(...), req: Request = None, db: Sess
         return {"status": False, "message": "There was an error uploading the file", "e": e}
     finally:
         await file.close()
-    job_crud.create_job(db, job)
-    return {"status": True, "message": f"Successfully uploaded {job.file_name}", "job_id":  job.job_id}
+    file_location = job.path + job.file_name
+    df = gpd.read_file(file_location)
+    count = len(df)
+    # df.to_file(job.path+job.file_name+'.geojson', driver="GeoJSON")
+    if count <= 50:
+        job_crud.create_job(db, job)
+        return {"count": count, "status": True, "message": f"Successfully uploaded {job.file_name}",
+                "job_id": job.job_id}
+    else:
+        os.remove(file_location)
+        os.rmdir(job.path)
+        return {"status": False, "message": "Not Allowed: Feature parcels count exceeded by 50 parcels"}
 
 
 @app.post("/create_job_details", dependencies=[Depends(JWTBearerData())], tags=["create_job"])
@@ -263,6 +282,16 @@ async def users(z: int, x: int, y: int, db: Session = Depends(get_db)):
 async def users(z: int, x: int, y: int, db: Session = Depends(get_db)):
     tile = get_county_grid(db, z, x, y)
     return Response(tile.tobytes(), media_type='application/vnd.mapbox-vector-tile')
+
+
+@app.get('/get_counties', dependencies=[Depends(JWTBearerAll())], tags=["jobs"])
+async def users(db: Session = Depends(get_db)):
+    return get_counties(db)
+
+
+@app.get('/get_states', dependencies=[Depends(JWTBearerAll())], tags=["jobs"])
+async def users(db: Session = Depends(get_db)):
+    return get_states(db)
 
 
 add_pagination(app)

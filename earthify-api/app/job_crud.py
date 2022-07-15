@@ -10,11 +10,21 @@ from database import engine
 
 
 def get_jobs(db: Session):
-    return db.query(models.Jobs).all()
+    return db.query(
+         models.Jobs, models.JobDetails
+    ).filter(
+         models.Jobs.job_id == models.JobDetails.job_id,
+    ).all()
 
 
 def get_user_jobs(db: Session, user_id: int):
-    return db.query(models.Jobs).filter(models.Jobs.user_id == user_id).all()
+    return db.query(
+         models.Jobs, models.JobDetails
+    ).filter(
+        models.Jobs.job_id == models.JobDetails.job_id,
+        models.Jobs.user_id == user_id
+    ).all()
+    # return db.query(models.Jobs).filter(models.Jobs.user_id == user_id).all()
 
 
 def get_job_by_id(db: Session, job_id: str):
@@ -24,12 +34,22 @@ def get_job_by_id(db: Session, job_id: str):
     df = gpd.read_file(file_location)
     col_name = list(df.columns)
     col_filter = col_name
+    map_json = json.loads(df.to_json())
     if "geom" in col_filter:
         col_filter.remove("geom")
     if "geometry" in col_filter:
         col_filter.remove("geometry")
     df = df[col_filter]
-    return {'name': data.file_name, 'details': data_details, 'columns': col_name, 'attributes':  json.loads(json.dumps(list(df.head(15).T.to_dict().values())))}
+    df = df.fillna('')
+    attributes = json.loads(json.dumps(list(df.T.to_dict().values())))
+    # print(attributes)
+    return {
+        'name': data.file_name,
+        'details': data_details,
+        'columns': col_name,
+        'attributes':  attributes,
+        'map': map_json
+    }
 
 
 def create_job(db: Session, job: schemas.Jobs):
@@ -108,6 +128,7 @@ def start_job(db: Session, data: schemas.Data):
     df.columns = db_col
     df = df.assign(job_id=data.job_id)
     df = df[df['geometry'].apply(lambda x: x.type == 'Polygon' or x.type == 'MultiPolygon')]
+    df = df.to_crs(4326)
     df.to_postgis('data', engine, if_exists='append')
     update_job(db, data.job_id, 1)
     return {'status': True, 'message': 'Job processed successfully!'}

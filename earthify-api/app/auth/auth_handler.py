@@ -21,7 +21,7 @@ def signJWT(email: str, id: int, role: int) -> Dict[str, str]:
         "email": email,
         "user_id": id,
         "iat": time.time(),
-        "exp": time.time() + 600,
+        "exp": time.time() + 3600,
         "route": role_route[role]
     }
     token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)

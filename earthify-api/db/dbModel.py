@@ -68,4 +68,10 @@ class County(Base):
     NAME = Column(Integer, primary_key=True, index=True)
 
 
+class States(Base):
+    __tablename__ = 'states'
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    NAME = Column(Integer, primary_key=True, index=True)
+
+
 
