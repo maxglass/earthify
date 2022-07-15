@@ -189,6 +189,10 @@ export class QualityCheckComponent implements OnInit {
   }
 
   processJob(): void {
+    if (this.currentJob.status != 0) {
+      SharedService.fire('Job already processed', true);
+      return;
+    }
     const body: any = {job_id: this.currentJob.job_id, col1: '', col2: '', col3: ''}
     const cols = Metro.getPlugin('#standard-columns', 'drag-items')
     cols.component.childNodes.forEach((c: any, i: number) => {
@@ -210,15 +214,38 @@ export class QualityCheckComponent implements OnInit {
   }
 
   checkForInvalid(evt: any): void {
+    if (this.currentJob.status != 0) {
+      SharedService.fire('Job already processed', true);
+      return;
+    }
     const ctx = this;
     setTimeout( () => {
       console.log('checking')
       if ($('.invalid').length > 0) {
         SharedService.invalidForm("#data-form");
       } else {
-        // ctx.processFile(evt)
+        ctx.processJobDetails()
       }
     }, 200);
+  }
+
+  processJobDetails(): any {
+    const formData = $('#data-form').serializeArray()
+    const form: any = {job_id: this.currentJob.job_id}
+    // form.append('job_id', job_id);
+    formData.forEach((formField: any) => {
+      form[formField.name] = formField.value;
+    });
+    SharedService.loading('update_job_details', false);
+    this.data.apiService('update_job_details', form).subscribe((result: any) => {
+      SharedService.loading('update_job_details', true);
+      SharedService.fire("Job updated successfully", false);
+      Metro.dialog.close('#job-detail-dialog');
+      this.getJobs();
+    },(error: any) => {
+      SharedService.loading('update_job_details', true);
+      SharedService.fire("Job updated failed", true);
+    });
   }
 
 }
