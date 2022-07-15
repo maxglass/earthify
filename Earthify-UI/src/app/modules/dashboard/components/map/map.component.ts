@@ -197,8 +197,9 @@ export class MapComponent implements OnInit {
               'paint': {
                 'fill-color': 'red', // blue color fill
                 'fill-opacity': 0.6,
-                'fill-outline-color': 'red'
-              }
+                'fill-outline-color': 'white'
+              },
+              minzoom: 7
             })
           this.map.addLayer({
             'id': 'data-labels',
@@ -217,7 +218,7 @@ export class MapComponent implements OnInit {
               'text-color': 'red',
               'text-halo-width': 1
             },
-            minzoom: 10
+            minzoom: 12
           });
 
             this.map.addSource('county-data-source', {
@@ -235,18 +236,28 @@ export class MapComponent implements OnInit {
                 'fill-color': [
                   'step',
                   ['get', 'count'],
-                  'rgba(21, 114, 161, 0.1)',
+                  'rgba(21, 114, 161, 0.0)',
                   0,
+                  'rgba(21, 114, 161, 0.1)',
+                  20,
+                  'rgba(21, 114, 161, 0.2)',
+                  50,
+                  'rgba(21, 114, 161, 0.3)',
+                  100,
+                  'rgba(21, 114, 161, 0.4)',
+                  200,
                   'rgba(21, 114, 161, 0.5)',
-                  5,
-                  'rgba(21, 114, 161, 0.8)',
-                  10,
-                  'rgba(21, 114, 161, 0.9)'
+                  500,
+                  'rgba(21, 114, 161, 0.6)',
+                  700,
+                  'rgba(21, 114, 161, 0.7)',
+                  1000,
+                  'rgba(21, 114, 161, 0.8)'
                 ], // blue color fill
                 'fill-opacity': 1,
                 'fill-outline-color': 'black'
               },
-              filter: [">=", 'count', 0]
+              // filter: ["!=", 'count', 0]
             })
 
 
@@ -267,7 +278,7 @@ export class MapComponent implements OnInit {
               'text-halo-color': 'rgba(0,0,0,0.5)',
               'text-halo-width': 10
             },
-            filter: [">=", 'count', 0]
+            minzoom: 5
           })
 
 // The 'building' layer in the Mapbox Streets

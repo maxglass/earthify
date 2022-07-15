@@ -6,21 +6,30 @@
     </div>
     <div class="items-list p-0">
 
-      <div class="item c-pointer" *ngFor="let job of jobs;let index = index;">
+      <div class="item c-pointer" *ngFor="let job of jobs;let index = index;" style="height: 140px !important;">
         <span class="avatar mif-chart-line fg-amber"></span>
-        <span class="label">{{job.file_name}}</span>
-        <span class="second-label">{{job.job_id}}</span>
+        <span class="label">{{job.Jobs.file_name}}</span>
+        <span class="second-label d-flex flex-column">
+          <span class="mt-1">ID: {{job.Jobs.job_id}}</span>
+          <span class="mt-1">Country: {{job.JobDetails.country}}</span>
+          <span class="mt-1">State: {{job.JobDetails.state}}</span>
+          <span class="mt-1">County: {{job.JobDetails.county}}</span>
+        </span>
         <span class="second-action d-flex flex-justify-between" style="width: 260px">
 
-                      <button (click)="getJobColumn(job)" class="image-button light">
+          <div class="d-flex flex-column" style="margin-top: -20px">
+            <button (click)="getJobColumn(job.Jobs)" class="image-button light">
                         <span class="icon mif-list"></span>
                         <span class="caption">View Details</span>
                       </button>
 
-                      <button *ngIf="job.status == 0" class="image-button alert" (click)="deleteJob(job)">
+                      <button *ngIf="job.Jobs.status == 0" class="image-button alert" (click)="deleteJob(job)">
                         <span class="icon mif-bin"></span>
                         <span class="caption">Delete Job</span>
                       </button>
+          </div>
+          <span *ngIf="job.Jobs.status == 1" style="font-size: 20px;padding: 4px;" class="fg-green mif-done_all"></span>
+          <span *ngIf="job.Jobs.status == 0" style="font-size: 20px;padding: 4px;" class="mif-hour-glass"></span>
         </span>
       </div>
     </div>
@@ -34,15 +43,22 @@
       <li class="active"><a href="#job-column">Standardize</a></li>
       <li><a href="#job-details">Details</a></li>
       <li><a href="#job-attributes">Attributes</a></li>
+      <li><a href="#job-map" (click)="resizeMap()">Map View</a></li>
     </ul>
     <div class="bg-light mt-2">
       <div id="job-column">
         <div class="bg-lightAmber" style="font-size: 10px">Note: Adjust the right columns to the left. All other columns will be neglected during processing</div>
         <div class="d-flex">
           <ul class="items-list">
-            <li>Col 1</li>
-            <li>Col 2</li>
-            <li>Col 3</li>
+            <li>Geometry</li>
+          </ul>
+          <ul class="items-list">
+            <li>geometry(auto detected)</li>
+          </ul>
+        </div>
+        <div class="d-flex">
+          <ul class="items-list">
+            <li>TXNID</li>
           </ul>
           <ul data-role="drag-items" class="items-list" id="standard-columns">
             <li *ngFor="let col of job.columns">{{col}}</li>
@@ -184,16 +200,21 @@
         </form>
       </div>
       <div id="job-attributes">
-        <div class="bg-lightAmber" style="font-size: 10px">Note: Limited Attributes</div>
         <table id="grid-table" class="table"
                data-role="table"
-               data-show-search="false"
-               data-show-rows-steps="false"
-               data-show-table-info="false"
-               data-show-pagination="false"
+               data-show-search="true"
+               data-show-rows-steps="true"
+               data-show-table-info="true"
+               data-show-pagination="true"
         >
 
         </table>
+      </div>
+      <div id="job-map">
+        <div id="map" class="w-100 d-block" style="height: 400px"
+        >
+
+        </div>
       </div>
 
     </div>
@@ -201,5 +222,21 @@
   <div class="dialog-actions d-none">
     <button class="button js-dialog-close">Disagree</button>
     <button class="button primary js-dialog-close">Agree</button>
+  </div>
+</div>
+
+<div class="dialog top-dialog" data-role="dialog" id="info-dialog" data-close-button="true">
+  <div class="dialog-title">Property Info</div>
+  <div class="dialog-content" style="overflow:auto;">
+    <div class="items-list">
+      <div class="item" *ngFor="let keyval of properties|keyvalue">
+        <span class="avatar mif-info fg-cyan"></span>
+        <span class="label">{{keyval.value}}</span>
+        <span class="second-label">{{keyval.key}}</span>
+      </div>
+    </div>
+  </div>
+  <div class="dialog-actions">
+    <button class="button js-dialog-close">Close</button>
   </div>
 </div>

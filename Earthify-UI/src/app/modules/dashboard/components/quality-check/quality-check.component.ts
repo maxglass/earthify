@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import {SharedService} from "../../../../shared.service";
+import {bbox} from '@turf/turf';
 declare var $:any;
 declare var Metro:any;
+declare const mapboxgl: any;
+
 @Component({
   selector: 'app-quality-check',
   templateUrl: './quality-check.component.html',
@@ -13,8 +16,14 @@ export class QualityCheckComponent implements OnInit {
   jobs: any = []
   job:any = {name: '', columns: [], details: {}};
   currentJob = {job_id: '', status: 1};
+  map:any;
+  geoJsonData:any = {}
+  properties : any = {}
+  bounds : any = {}
+  jsonCount = 0;
   ngOnInit(): void {
-    this.getJobs()
+    this.getJobs();
+    this.initMap();
   }
 
 
@@ -27,6 +36,60 @@ export class QualityCheckComponent implements OnInit {
       }, (e:any) => {
         SharedService.loading('getJob', true)
       })
+  }
+
+  initMap(): void {
+    this.map = new mapboxgl.Map({
+      container: 'map', // container id
+      center: [-93.5653521,37.7931689], // starting position
+      zoom: 3,
+      accessToken: SharedService.accessToken,
+      style: 'mapbox://styles/mapbox/satellite-streets-v11'
+    });
+    console.log(this.map);
+    this.map.on('click', (e: any) => {
+      const selectedFeatures = this.map.queryRenderedFeatures(e.point, {
+        layers: ['maine']
+      });
+      if (selectedFeatures.length > 0) {
+        this.properties = selectedFeatures[0].properties;
+        Metro.dialog.open('#info-dialog')
+      }
+    })
+  }
+
+  addGeoJSON(data: any): void {
+    this.geoJsonData = data;
+    if(this.map.getLayer('maine') !== undefined) {
+      this.map.removeLayer('maine')
+    }
+    if(this.map.getSource('maine') !== undefined) {
+      this.map.removeSource('maine')
+    }
+    this.map.addSource('maine', {
+      'type': 'geojson',
+      'data': data
+    });
+    this.map.addLayer({
+      'id': 'maine',
+      'type': 'fill',
+      'source': 'maine', // reference the data source
+      'layout': {},
+      'paint': {
+        'fill-color': 'red', // blue color fill
+        'fill-opacity': 0.5,
+        'fill-outline-color': 'white'
+      }
+    });
+    let bounds = bbox(data);
+    this.bounds = new mapboxgl.LngLatBounds(
+      [bounds[2],bounds[1]],
+      [bounds[0], bounds[1]]
+    );
+    this.map.fitBounds(this.bounds, {
+      padding: 20
+    });
+
   }
 
   getJobColumn(job: any): void {
@@ -53,7 +116,6 @@ export class QualityCheckComponent implements OnInit {
         });
 
         if (result.attributes != null) {
-          const table = $('#grid-table').data('table');
           const rows: any = [];
 
           const attrRows: any = Object.values(result.attributes)
@@ -64,16 +126,28 @@ export class QualityCheckComponent implements OnInit {
             });
             rows.push(data);
           });
+          console.log(head)
+          console.log(rows)
           table.setData({header: head, data: rows});
           table.draw();
         } else {
           table.setData({header: head, data: []});
           table.draw();
         }
+        this.addGeoJSON(result.map)
         Metro.dialog.open('#job-detail-dialog')
       }, (e:any) => {
         SharedService.loading('getJobCol', true)
       })
+  }
+
+  resizeMap(): void {
+    setTimeout(() => {
+      this.map.resize();
+      this.map.fitBounds(this.bounds, {
+        padding: 20
+      });
+    }, 500)
   }
 
   deleteJob(job: any): void {

@@ -24,7 +24,7 @@
                 Description is required and must be at least of 6 characters
             </span></div>
         <div class="form-group d-flex flex-column">
-          <input type="text" name="country" data-role="input"
+          <select type="text" name="country" data-role="select"
               placeholder="Enter country name"
               data-prepend="<span class='mif-info'>"
               data-label="Country"
@@ -33,11 +33,13 @@
               data-cls-informer="fg-lightCyan"
               data-cls-icon="fg-darkCyan"
               data-validate="required"
-    ><span class="invalid_feedback">
+          >
+            <option selected>USA</option>
+          </select><span class="invalid_feedback">
                 Country is required
             </span></div>
         <div class="form-group d-flex flex-column">
-          <input type="text" name="state" data-role="input"
+          <select type="text" name="state" id="state-list" data-role="select"
               placeholder="Enter state name"
               data-prepend="<span class='mif-info'>"
               data-label="State"
@@ -46,11 +48,14 @@
               data-cls-informer="fg-lightCyan"
               data-cls-icon="fg-darkCyan"
             data-validate="required"
-    ><span class="invalid_feedback">
+          >
+            <option *ngFor="let c of states">{{c.NAME}}</option>
+
+          </select><span class="invalid_feedback">
                 State is required
             </span></div>
         <div class="form-group d-flex flex-column">
-          <input type="text" name="county" data-role="input"
+          <select type="text" id="county-list" name="county" data-role="select"
               placeholder="Enter county name"
               data-prepend="<span class='mif-info'>"
               data-label="County"
@@ -59,7 +64,9 @@
               data-cls-informer="fg-lightCyan"
               data-cls-icon="fg-darkCyan"
             data-validate="required"
-    ><span class="invalid_feedback">
+          >
+            <option *ngFor="let c of counties">{{c.NAME}}</option>
+          </select><span class="invalid_feedback">
                 County is required
             </span></div>
         <div class="form-group d-flex flex-column">
@@ -71,7 +78,7 @@
               data-cls-label="fg-cyan"
               data-cls-informer="fg-lightCyan"
               data-cls-icon="fg-darkCyan"
-            data-validate="required"
+            data-validate="required url"
     ><span class="invalid_feedback">
                 Invalid URL
             </span></div>
@@ -84,7 +91,7 @@
               data-cls-label="fg-cyan"
               data-cls-informer="fg-lightCyan"
               data-cls-icon="fg-darkCyan"
-            data-validate="required"
+            data-validate="required url"
     ><span class="invalid_feedback">
                 Invalid URL
             </span></div>
@@ -97,7 +104,7 @@
               data-cls-label="fg-cyan"
               data-cls-informer="fg-lightCyan"
               data-cls-icon="fg-darkCyan"
-            data-validate="required"
+            data-validate="required url"
     ><span class="invalid_feedback">
                 Invalid URL
             </span></div>
@@ -110,7 +117,7 @@
               data-cls-label="fg-cyan"
               data-cls-informer="fg-lightCyan"
               data-cls-icon="fg-darkCyan"
-            data-validate="required"
+            data-validate="required url"
     ><span class="invalid_feedback">
                 Invalid URL
             </span></div>
@@ -123,12 +130,18 @@
               data-cls-label="fg-cyan"
               data-cls-informer="fg-lightCyan"
               data-cls-icon="fg-darkCyan"
-            data-validate="required"
+            data-validate="required url"
     ><span class="invalid_feedback">
                 Invalid URL
             </span></div>
-      <button type="submit" class="button small success">Submit ({{file != null ? file.name: ''}})</button>
-      <button (click)="file = null" class="button small alert">Cancel</button>
+      <button type="submit" class="image-button success">
+        <span class="icon mif-cloud-upload"></span>
+        <span class="caption">Submit ({{file != null ? file.name: ''}})</span>
+      </button>
+      <button (click)="file = null" class="image-button alert">
+        <span class="icon mif-cross-light"></span>
+        <span class="caption">Cancel</span>
+      </button>
       </form>
   </div>
   </div>
@@ -141,14 +154,14 @@
 
       <div class="item" *ngFor="let job of jobs;let index = index;">
         <span class="avatar mif-chart-line fg-amber"></span>
-        <span class="label">{{job.file_name}}</span>
+        <span class="label">{{job.Jobs.file_name}}</span>
         <span class="second-label d-flex flex-column pt-1">
-          <label>Time: {{job.start_time}}</label>
-          <label>ID: {{job.job_id}}</label>
+          <label>Time: {{job.Jobs.start_time}}</label>
+          <label>ID: {{job.Jobs.job_id}}</label>
         </span>
         <span class="second-action" style="font-size: 11px;
     width: 70px;">
-          {{getStatus(job.status)}}
+          {{getStatus(job.Jobs.status)}}
         </span>
       </div>
     </div>

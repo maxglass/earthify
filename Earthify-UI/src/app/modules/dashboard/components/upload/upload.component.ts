@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {SharedService} from "../../../../shared.service";
 declare var $: any;
+declare var Metro: any;
 @Component({
   selector: 'app-upload',
   templateUrl: './upload.component.html',
@@ -11,9 +12,13 @@ export class UploadComponent implements OnInit {
   constructor(private data: SharedService) { }
   file: any = null;
   jobs: any = [];
+  counties: any = [];
+  states: any = [];
   processReady = false
   ngOnInit(): void {
     this.getJobs();
+    this.getCounties();
+    this.getStates();
   }
 
   getJobs(): void {
@@ -24,6 +29,31 @@ export class UploadComponent implements OnInit {
         this.jobs = result
       }, (e:any) => {
         SharedService.loading('getJob', true)
+      })
+  }
+
+
+  getCounties(): void {
+    SharedService.loading('get_counties', false)
+    this.data.apiGetService('get_counties').subscribe(
+      (result: any) => {
+        SharedService.loading('get_counties', true)
+        this.counties = result
+        setTimeout(() => {Metro.getPlugin('#county-list', 'select').reset()}, 300)
+      }, (e:any) => {
+        SharedService.loading('get_counties', true)
+      })
+  }
+
+  getStates(): void {
+    SharedService.loading('get_states', false)
+    this.data.apiGetService('get_states').subscribe(
+      (result: any) => {
+        SharedService.loading('get_states', true)
+        this.states = result
+        setTimeout(() => {Metro.getPlugin('#state-list', 'select').reset()}, 300)
+      }, (e:any) => {
+        SharedService.loading('get_states', true)
       })
   }
 
@@ -53,9 +83,10 @@ export class UploadComponent implements OnInit {
     this.data.apiService('create_job', form).subscribe((result: any) => {
       this.file = null;
       SharedService.loading('create_job', true);
-      SharedService.fire(result.message, !result.status);
       if (result.status){
         this.processJobDetails(result.job_id)
+      } else {
+        SharedService.fire(result.message, true);
       }
     },(error: any) => {
       this.file = null;
