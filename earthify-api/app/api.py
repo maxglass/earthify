@@ -111,6 +111,11 @@ async def start_jobs(job_id: str, status: int, db: Session = Depends(get_db)) ->
     return job_crud.update_job(db, job_id, status)
 
 
+@app.post("/update_job_details", dependencies=[Depends(JWTBearerST)], tags=["jobs"])
+async def user_update(job_details: schemas.JobDetails = Body(...), db: Session = Depends(get_db)):
+    return job_crud.update_job_details(db, job_details)
+
+
 @app.get("/check/user/upload", tags=["user-check"], dependencies=[Depends(JWTBearerData())])
 async def start_jobs() -> dict:
     return {"status": True}

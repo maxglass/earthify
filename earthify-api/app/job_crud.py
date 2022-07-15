@@ -132,3 +132,15 @@ def start_job(db: Session, data: schemas.Data):
     df.to_postgis('data', engine, if_exists='append')
     update_job(db, data.job_id, 1)
     return {'status': True, 'message': 'Job processed successfully!'}
+
+
+def update_job_details(db: Session, details: schemas.JobDetails):
+    job_detail = db.query(models.JobDetails).filter(models.JobDetails.job_id == details.job_id).first()
+    job_data = details.dict(exclude_unset=True)
+    for key, value in job_data.items():
+        if key != 'job_id':
+            setattr(job_detail, key, value)
+    db.add(job_detail)
+    db.commit()
+    db.refresh(job_detail)
+    return job_detail
