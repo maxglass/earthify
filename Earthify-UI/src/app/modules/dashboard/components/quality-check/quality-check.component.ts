@@ -46,7 +46,6 @@ export class QualityCheckComponent implements OnInit {
       accessToken: SharedService.accessToken,
       style: 'mapbox://styles/mapbox/satellite-streets-v11'
     });
-    console.log(this.map);
     this.map.on('click', (e: any) => {
       const selectedFeatures = this.map.queryRenderedFeatures(e.point, {
         layers: ['maine']
@@ -126,8 +125,6 @@ export class QualityCheckComponent implements OnInit {
             });
             rows.push(data);
           });
-          console.log(head)
-          console.log(rows)
           table.setData({header: head, data: rows});
           table.draw();
         } else {
@@ -220,7 +217,6 @@ export class QualityCheckComponent implements OnInit {
     }
     const ctx = this;
     setTimeout( () => {
-      console.log('checking')
       if ($('.invalid').length > 0) {
         SharedService.invalidForm("#data-form");
       } else {

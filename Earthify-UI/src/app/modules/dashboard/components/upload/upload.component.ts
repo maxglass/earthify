@@ -59,13 +59,11 @@ export class UploadComponent implements OnInit {
 
   getFile(e: any): void {
     this.file = e.target.files[0]
-    console.log(this.file)
   }
 
   checkForInvalid(evt: any): void {
     const ctx = this;
     setTimeout( () => {
-      console.log('checking')
       if ($('.invalid').length > 0) {
         SharedService.invalidForm("#data-form");
       } else {
