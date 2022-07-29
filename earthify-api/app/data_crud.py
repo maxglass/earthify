@@ -29,3 +29,19 @@ def get_counties(db: Session):
 
 def get_states(db: Session):
     return db.query(models.States).distinct('NAME').all()
+
+
+def get_schema_column(db: Session):
+    return db.execute("SELECT column_name FROM information_schema.columns where table_name   = 'data'").all()
+
+
+def del_schema_column(column: str, db: Session):
+    result = db.execute("ALTER TABLE data DROP COLUMN " + column)
+    db.commit()
+    return {'status': True}
+
+
+def add_schema_column(column: str, db: Session):
+    db.execute("ALTER TABLE data ADD " + column + " text")
+    db.commit()
+    return {'status': True}

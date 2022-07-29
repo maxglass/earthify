@@ -108,29 +108,24 @@ def update_job(db: Session, job_id: str, status: int):
     return job
 
 
-def start_job(db: Session, data: schemas.Data):
-    job = db.query(models.Jobs).filter(models.Jobs.job_id == data.job_id).first()
+def start_job(db: Session, data: dict):
+    job = db.query(models.Jobs).filter(models.Jobs.job_id == data['job_id']).first()
     df = gpd.read_file(job.path + job.file_name)
     col = []
     db_col = []
-    if data.col1 != '':
-        col.append(data.col1)
-        db_col.append('col1')
-    if data.col2 != '':
-        col.append(data.col2)
-        db_col.append('col2')
-    if data.col3 != '':
-        col.append(data.col3)
-        db_col.append('col3')
+    for key, value in data.items():
+        if key != 'job_id':
+            col.append(value)
+            db_col.append(key)
     db_col.append('geometry')
     col.append('geometry')
     df = df[col]
     df.columns = db_col
-    df = df.assign(job_id=data.job_id)
+    df = df.assign(job_id=data['job_id'])
     df = df[df['geometry'].apply(lambda x: x.type == 'Polygon' or x.type == 'MultiPolygon')]
     df = df.to_crs(4326)
     df.to_postgis('data', engine, if_exists='append')
-    update_job(db, data.job_id, 1)
+    update_job(db, data['job_id'], 1)
     return {'status': True, 'message': 'Job processed successfully!'}
 
 

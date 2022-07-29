@@ -1,3 +1,4 @@
+import json
 import os
 import random
 import shutil
@@ -15,7 +16,8 @@ from decouple import config
 from app import user_crud, job_crud
 from app.auth.auth_bearer import JWTBearerAdmin, JWTBearerST, JWTBearerData, JWTBearer, JWTBearerNR, JWTBearerAll
 from app.auth.auth_handler import signJWT
-from app.data_crud import get_grid, get_county_grid, get_counties, get_state_count, get_county_count, get_states
+from app.data_crud import get_grid, get_county_grid, get_counties, get_state_count, get_county_count, get_states, \
+    get_schema_column, del_schema_column, add_schema_column
 from app.model import UserLoginSchema
 
 import db.dbModel as models
@@ -102,7 +104,7 @@ async def get_jobs(db: Session = Depends(get_db), req: Request = None) -> dict:
 
 
 @app.post("/job/process", dependencies=[Depends(JWTBearerST())], tags=["jobs"])
-async def job_process(data: schemas.Data = Body(...), db: Session = Depends(get_db)) -> dict:
+async def job_process(data: dict = Body(...), db: Session = Depends(get_db)) -> dict:
     return job_crud.start_job(db, data)
 
 
@@ -297,6 +299,21 @@ async def users(db: Session = Depends(get_db)):
 @app.get('/get_states', dependencies=[Depends(JWTBearerAll())], tags=["jobs"])
 async def users(db: Session = Depends(get_db)):
     return get_states(db)
+
+
+@app.get('/get_schema_column', tags=["jobs"])
+async def users(db: Session = Depends(get_db)):
+    return get_schema_column(db)
+
+
+@app.get('/del_schema_column/{col}', tags=["jobs"])
+async def users(col: str, db: Session = Depends(get_db)):
+    return del_schema_column(col, db)
+
+
+@app.get('/add_schema_column/{col}', tags=["jobs"])
+async def users(col: str, db: Session = Depends(get_db)):
+    return add_schema_column(col, db)
 
 
 add_pagination(app)

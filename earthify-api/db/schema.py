@@ -72,16 +72,6 @@ class JobDetails(BaseModel):
         orm_mode = True
 
 
-class Data(BaseModel):
-    job_id: str
-    col1: str
-    col2: str
-    col3: str
-
-    class Config:
-        orm_mode = True
-
-
 class UserUpdate(BaseModel):
     email: str
     first_name: str
