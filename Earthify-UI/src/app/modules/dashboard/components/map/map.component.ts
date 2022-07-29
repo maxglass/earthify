@@ -201,25 +201,43 @@ export class MapComponent implements OnInit {
               },
               minzoom: 7
             })
-          this.map.addLayer({
-            'id': 'data-labels',
-            'type': 'symbol',
-            'source': 'data-source',
-            'source-layer': 'default',
-            'layout': {
-              'text-field': ['get', 'col1'],
-              'text-variable-anchor': ['top', 'bottom', 'left', 'right'],
-              'text-radial-offset': 0.5,
-              'text-justify': 'auto',
-              'text-size': 10,
-            },
-            paint: {
-              'text-halo-color': 'white',
-              'text-color': 'red',
-              'text-halo-width': 1
-            },
-            minzoom: 12
-          });
+
+
+            this.data.apiGetService('get_schema_column').subscribe(
+              (result: any) => {
+                const cols: any = []
+                result.forEach((c:any) => {
+                  if (['id', 'attributes', 'geometry', 'job_id'].indexOf(c.column_name) === -1) {
+                    cols.push(c.column_name);
+                  }
+                })
+                if (cols.length > 0) {
+                  this.map.addLayer({
+                    'id': 'data-labels',
+                    'type': 'symbol',
+                    'source': 'data-source',
+                    'source-layer': 'default',
+                    'layout': {
+                      'text-field': ['get', cols[0]],
+                      'text-variable-anchor': ['top', 'bottom', 'left', 'right'],
+                      'text-radial-offset': 0.5,
+                      'text-justify': 'auto',
+                      'text-size': 10,
+                    },
+                    paint: {
+                      'text-halo-color': 'white',
+                      'text-color': 'red',
+                      'text-halo-width': 1
+                    },
+                    minzoom: 12
+                  });
+                }
+              },
+              (err: any) => {
+              }
+            )
+
+
 
             this.map.addSource('county-data-source', {
               type: 'vector',

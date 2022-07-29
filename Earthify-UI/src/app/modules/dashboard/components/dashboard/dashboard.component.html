@@ -64,10 +64,11 @@
 
     <ul id="main-menu" data-app-bar="false" data-role="materialtabs" class="bg-transparent fg-light">
         <li routerLink="map"><a href="#map">Map</a></li>
-        <li *ngIf="currentRoute=='upload' || currentRoute == 'management'" routerLink="upload"><a href="#upload">Upload</a></li>
-        <li *ngIf="currentRoute=='standard' || currentRoute == 'management'" routerLink="standard"><a href="#standard">Standardize</a></li>
+        <li (click)="locate('standard')" *ngIf="currentRoute=='upload' || currentRoute == 'management'" routerLink="upload"><a href="#upload">Upload</a></li>
+        <li (click)="locate('standard')" *ngIf="currentRoute=='standard' || currentRoute == 'management'" routerLink="standard"><a href="#standard">Standardize</a></li>
 <!--        <li *ngIf="currentRoute=='normalise' || currentRoute == 'management'" routerLink="normalise"><a href="#normalise">Normalize</a></li>-->
-        <li *ngIf="currentRoute=='management' || currentRoute == 'management'" routerLink="management"><a href="#management">User-Management</a></li>
+        <li (click)="locate('standard')" *ngIf="currentRoute=='management'" routerLink="management"><a href="#management">User-Management</a></li>
+        <li (click)="locate('standard')" *ngIf="currentRoute=='management'" routerLink="schema"><a href="#schema">Data-Schema</a></li>
     </ul>
     <div class="app-bar-container ml-auto">
         <div class="app-bar-container bg-grayBlue fg-light" style="z-index: 100000;position: fixed;top: 0; right: 0">

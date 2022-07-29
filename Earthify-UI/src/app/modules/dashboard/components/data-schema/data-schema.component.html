@@ -1,0 +1,25 @@
+
+
+<div class="container h-100 p-0" style="background: rgba(255,255,255,0.75);overflow: auto;">
+  <div class="mt-8 pb-5 pl-3 pr-3 pt-20 skill-box" style="background: rgba(255,255,255,0.7);">
+    <div class="header fg-white" style="background: rgba(138, 162, 174,0.7);">
+      <div class="avatar"><span class="icon mif-2x mif-database"></span></div>
+      <div class="title">Data Schema</div>
+    </div>
+    <div class="w-100" style="height: 50px">
+      <button class="image-button secondary float-right" (click)="addColumn()">
+        <span class="icon mif-database"></span>
+        <span class="caption">Add Collectable</span>
+      </button>
+    </div>
+    <div class="items-list">
+      <div class="item" *ngFor="let c of columns">
+        <span class="avatar mif-database"></span>
+        <span class="label">{{c}}</span>
+        <span class="second-label">Collectable</span>
+        <span class="second-action mif-bin fg-red" (click)="delColumn(c)"></span>
+      </div>
+    </div>
+
+  </div>
+</div>

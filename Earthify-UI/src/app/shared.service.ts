@@ -24,7 +24,7 @@ export class SharedService {
         locationCenter: {lat: 0, lng: 0},
         deedId: ''
     };
-    static accessToken = 'pk.eyJ1Ijoid2FoYWJjaCIsImEiOiJjamIyaTVrdXkyYzUxMzNuZ2FkNThidTV6In0.RN8ftxXp1QaswbhxFKUNlw';
+    static accessToken = 'pk.eyJ1IjoibWF4Z2xhc3MiLCJhIjoiY2w2MmQ5Z2l2MjY3cTNqbW5saG9wOGJwYyJ9.PxQEJ7MrfW080S1t-P4jmw';
     static server = '';
     jwtHelper = new JwtHelperService();
     public static timerId: any;

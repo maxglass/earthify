@@ -20,8 +20,10 @@ export class QualityCheckComponent implements OnInit {
   geoJsonData:any = {}
   properties : any = {}
   bounds : any = {}
+  columns: any = []
   jsonCount = 0;
   ngOnInit(): void {
+    this.getSchema();
     this.getJobs();
     this.initMap();
   }
@@ -185,16 +187,39 @@ export class QualityCheckComponent implements OnInit {
       })
   }
 
+  getSchema(): void {
+    this.columns = [];
+    SharedService.loading('get_schema_column');
+    this.data.apiGetService('get_schema_column').subscribe(
+      (result: any) => {
+        SharedService.loading('get_schema_column', true);
+        result.forEach((c:any) => {
+          if (['id', 'attributes', 'geometry', 'job_id'].indexOf(c.column_name) === -1) {
+            this.columns.push(c.column_name);
+          }
+        })
+        console.log(this.columns);
+      },
+      (err: any) => {
+        SharedService.loading('get_schema_column', true);
+      }
+    )
+  }
+
   processJob(): void {
+    if (this.columns.length == 0) {
+      SharedService.fire('No data schema defined', true);
+      return;
+    }
     if (this.currentJob.status != 0) {
       SharedService.fire('Job already processed', true);
       return;
     }
-    const body: any = {job_id: this.currentJob.job_id, col1: '', col2: '', col3: ''}
+    const body: any = {job_id: this.currentJob.job_id}
     const cols = Metro.getPlugin('#standard-columns', 'drag-items')
     cols.component.childNodes.forEach((c: any, i: number) => {
-      if (i < 3) {
-        body['col'+(i+1)] = c.innerText;
+      if (i < this.columns.length) {
+        body[this.columns[i]] = c.innerText;
       }
     });
     SharedService.loading('process_job', false);

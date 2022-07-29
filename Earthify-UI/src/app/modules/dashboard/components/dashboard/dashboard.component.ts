@@ -54,9 +54,11 @@ export class DashboardComponent implements OnInit {
     constructor(private data: SharedService) {
         this.currentRoute = this.data.getRole()
         setTimeout(() => {
-            const ref = location.hash.split('/').pop();
-            $(`li[routerLink="${ref}"]`).click();
-        }, 250)
+          const ref = location.hash.split('/').pop();
+          // $(`li[routerLink="${ref}"]`).click();
+          Metro.getPlugin('#main-menu').materialtabs.openTab($(`li[routerLink="${ref}"]`))
+        }, 200)
+
     }
 
     ngOnInit(): void {
@@ -317,5 +319,12 @@ export class DashboardComponent implements OnInit {
                 SharedService.fire("Internal Error", true);
             }
         )
+    }
+
+  locate(route: string): void {
+      setTimeout(() => {
+        //http://localhost:4200/#/dashboard/app/standard
+        location.reload(true)
+      }, 200)
     }
 }

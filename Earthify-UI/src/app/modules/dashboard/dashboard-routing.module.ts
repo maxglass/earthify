@@ -11,6 +11,7 @@ import {StandardGuard} from "../../guards/standard.guard";
 import {NormaliseGuard} from "../../guards/normalise.guard";
 import {LoginAdminGuard} from "../../guards/login-admin.guard";
 import {AdminComponent} from "./components/admin/admin.component";
+import {DataSchemaComponent} from "./components/data-schema/data-schema.component";
 
 
 const routes: Routes = [
@@ -23,7 +24,8 @@ const routes: Routes = [
             { path: 'upload', component: UploadComponent, canActivate: [UplaodGuard]},
             { path: 'standard', component: QualityCheckComponent,canActivate: [StandardGuard]},
             { path: 'normalise', component: QualityCheckComponent,canActivate: [NormaliseGuard]},
-            { path: 'management', component: AdminComponent,canActivate: [LoginAdminGuard]}
+            { path: 'management', component: AdminComponent,canActivate: [LoginAdminGuard]},
+            { path: 'schema', component: DataSchemaComponent,canActivate: [LoginAdminGuard]}
         ]
     },
 ];

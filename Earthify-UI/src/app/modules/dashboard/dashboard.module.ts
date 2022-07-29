@@ -8,6 +8,7 @@ import { MainComponent } from './components/main/main.component';
 import { UploadComponent } from './components/upload/upload.component';
 import { QualityCheckComponent } from './components/quality-check/quality-check.component';
 import {AdminComponent} from "./components/admin/admin.component";
+import { DataSchemaComponent } from './components/data-schema/data-schema.component';
 
 
 @NgModule({
@@ -17,7 +18,8 @@ import {AdminComponent} from "./components/admin/admin.component";
     MainComponent,
     UploadComponent,
     QualityCheckComponent,
-    AdminComponent
+    AdminComponent,
+    DataSchemaComponent
   ],
   imports: [
     CommonModule,

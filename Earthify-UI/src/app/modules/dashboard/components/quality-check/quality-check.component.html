@@ -23,7 +23,7 @@
                         <span class="caption">View Details</span>
                       </button>
 
-                      <button *ngIf="job.Jobs.status == 0" class="image-button alert" (click)="deleteJob(job)">
+                      <button *ngIf="job.Jobs.status == 0" class="image-button alert" (click)="deleteJob(job.Jobs)">
                         <span class="icon mif-bin"></span>
                         <span class="caption">Delete Job</span>
                       </button>
@@ -58,7 +58,7 @@
         </div>
         <div class="d-flex">
           <ul class="items-list">
-            <li>TXNID</li>
+            <li *ngFor="let c of columns">{{c}}</li>
           </ul>
           <ul data-role="drag-items" class="items-list" id="standard-columns">
             <li *ngFor="let col of job.columns">{{col}}</li>
