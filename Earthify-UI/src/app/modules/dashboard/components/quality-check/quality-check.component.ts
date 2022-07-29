@@ -22,8 +22,12 @@ export class QualityCheckComponent implements OnInit {
   bounds : any = {}
   columns: any = []
   jsonCount = 0;
+  counties: any = [];
+  states: any = [];
   ngOnInit(): void {
     this.getSchema();
+    this.getCounties();
+    this.getStates();
     this.getJobs();
     this.initMap();
   }
@@ -93,6 +97,32 @@ export class QualityCheckComponent implements OnInit {
 
   }
 
+
+
+  getCounties(): void {
+    SharedService.loading('get_counties', false)
+    this.data.apiGetService('get_counties').subscribe(
+      (result: any) => {
+        SharedService.loading('get_counties', true)
+        this.counties = result
+        setTimeout(() => {Metro.getPlugin('#county-list', 'select').reset()}, 300)
+      }, (e:any) => {
+        SharedService.loading('get_counties', true)
+      })
+  }
+
+  getStates(): void {
+    SharedService.loading('get_states', false)
+    this.data.apiGetService('get_states').subscribe(
+      (result: any) => {
+        SharedService.loading('get_states', true)
+        this.states = result
+        setTimeout(() => {Metro.getPlugin('#state-list', 'select').reset()}, 300)
+      }, (e:any) => {
+        SharedService.loading('get_states', true)
+      })
+  }
+
   getJobColumn(job: any): void {
     this.currentJob = job;
     SharedService.loading('getJobCol', false)
@@ -101,6 +131,10 @@ export class QualityCheckComponent implements OnInit {
         SharedService.loading('getJobCol', true)
         this.job.columns = result.columns
         this.job.details = result.details
+        const selS = Metro.getPlugin('#state-list', 'select');
+        const selC = Metro.getPlugin('#county-list', 'select');
+        selS.val(this.job.details.state);
+        selC.val(this.job.details.county);
         this.job.name = result.name;
         $('#grid-table tbody').empty();
         const table = $('#grid-table').data('table');

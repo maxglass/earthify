@@ -88,42 +88,49 @@
                 Description is required and must be at least of 6 characters
             </span></div>
           <div class="form-group d-flex flex-column">
-            <input value="{{job.details.country}}" type="text" name="country" data-role="input"
-                   placeholder="Enter country name"
-                   data-prepend="<span class='mif-info'>"
-                   data-label="Country"
-                   data-cls-line="bg-cyan"
-                   data-cls-label="fg-cyan"
-                   data-cls-informer="fg-lightCyan"
-                   data-cls-icon="fg-darkCyan"
-                   data-validate="required"
-            ><span class="invalid_feedback">
+            <select type="text" name="country" data-role="select"
+                    placeholder="Enter country name"
+                    data-prepend="<span class='mif-info'>"
+                    data-label="Country"
+                    data-cls-line="bg-cyan"
+                    data-cls-label="fg-cyan"
+                    data-cls-informer="fg-lightCyan"
+                    data-cls-icon="fg-darkCyan"
+                    data-validate="required"
+            >
+              <option selected>USA</option>
+            </select><span class="invalid_feedback">
                 Country is required
             </span></div>
           <div class="form-group d-flex flex-column">
-            <input value="{{job.details.state}}" type="text" name="state" data-role="input"
-                   placeholder="Enter state name"
-                   data-prepend="<span class='mif-info'>"
-                   data-label="State"
-                   data-cls-line="bg-cyan"
-                   data-cls-label="fg-cyan"
-                   data-cls-informer="fg-lightCyan"
-                   data-cls-icon="fg-darkCyan"
-                   data-validate="required"
-            ><span class="invalid_feedback">
+            <select type="text" name="state" id="state-list" data-role="select"
+                    placeholder="Enter state name"
+                    data-prepend="<span class='mif-info'>"
+                    data-label="State"
+                    data-cls-line="bg-cyan"
+                    data-cls-label="fg-cyan"
+                    data-cls-informer="fg-lightCyan"
+                    data-cls-icon="fg-darkCyan"
+                    data-validate="required"
+            >
+              <option *ngFor="let c of states">{{c.NAME}}</option>
+
+            </select><span class="invalid_feedback">
                 State is required
             </span></div>
           <div class="form-group d-flex flex-column">
-            <input value="{{job.details.county}}" type="text" name="county" data-role="input"
-                   placeholder="Enter county name"
-                   data-prepend="<span class='mif-info'>"
-                   data-label="County"
-                   data-cls-line="bg-cyan"
-                   data-cls-label="fg-cyan"
-                   data-cls-informer="fg-lightCyan"
-                   data-cls-icon="fg-darkCyan"
-                   data-validate="required"
-            ><span class="invalid_feedback">
+            <select type="text" id="county-list" name="county" data-role="select"
+                    placeholder="Enter county name"
+                    data-prepend="<span class='mif-info'>"
+                    data-label="County"
+                    data-cls-line="bg-cyan"
+                    data-cls-label="fg-cyan"
+                    data-cls-informer="fg-lightCyan"
+                    data-cls-icon="fg-darkCyan"
+                    data-validate="required"
+            >
+              <option *ngFor="let c of counties">{{c.NAME}}</option>
+            </select><span class="invalid_feedback">
                 County is required
             </span></div>
           <div class="form-group d-flex flex-column">
