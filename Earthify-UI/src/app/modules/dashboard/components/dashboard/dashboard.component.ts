@@ -324,7 +324,8 @@ export class DashboardComponent implements OnInit {
   locate(route: string): void {
       setTimeout(() => {
         //http://localhost:4200/#/dashboard/app/standard
+        location.href = location.origin + '/#/dashboard/app/' + route
         location.reload(true)
-      }, 200)
+      }, 300)
     }
 }

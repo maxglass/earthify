@@ -68,7 +68,7 @@ export class DataSchemaComponent implements OnInit {
       clsDialog: 'field-dialog',
       actions: [
         {
-          caption: "Buy",
+          caption: "Add",
           cls: "success",
           onclick: function(){
             const name = $('#field-name').val();
@@ -82,7 +82,7 @@ export class DataSchemaComponent implements OnInit {
           }
         },
         {
-          caption: "No",
+          caption: "Cancel",
           cls: "js-dialog-close light",
           onclick: function(){
 
